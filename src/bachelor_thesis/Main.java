@@ -1,5 +1,4 @@
 package bachelor_thesis;
-
 import org.jgrapht.Graph;
 import org.jgrapht.UndirectedGraph;
 import org.jgrapht.graph.DefaultEdge;
@@ -22,37 +21,41 @@ public class Main {
 			g.addVertex(i);
 
 		// Create a random graph
-
+		
 		for (int i = 0; i < n; i++)
 			for (int j = i + 1; j < n; j++) {
 				if (rnd.nextInt(1000) < 500) {
 					g.addEdge(i, j);
 				}
 			}
-
+		
+		
+		// Create a graceful star S_5, i.e. the compete bipartite graph K_1_4
+		/*
 		g.addEdge(0, 1);
 		g.addEdge(0, 2);
 		g.addEdge(0, 3);
 		g.addEdge(0, 4);
-
+		*/
+		
 		System.out.println(g);
-
+		
 		System.out.println(checkGraceful(g));
 	}
-
-	public static boolean checkGraceful(Graph<Integer, DefaultEdge> g) {
-		int[] edgeLabels = new int[g.edgeSet().size() + 1];
-
-		Set<DefaultEdge> edges = g.edgeSet();
-		for (DefaultEdge e : edges) {
+	
+	public static boolean checkGraceful (Graph<Integer, DefaultEdge> g) {
+		int[] edgeLabels = new int[g.edgeSet().size()+1];
+		
+	    Set<DefaultEdge> edges = g.edgeSet();
+		for (DefaultEdge e: edges){
 			System.out.println(e);
 			int max = Math.max(g.getEdgeSource(e), g.getEdgeTarget(e));
 			int min = Math.min(g.getEdgeSource(e), g.getEdgeTarget(e));
-			edgeLabels[max - min]++;
+			edgeLabels[max-min]++;
 		}
-
-		for (int i = 1; i < edgeLabels.length; i++) {
-			if (edgeLabels[i] != 1)
+		
+		for (int i = 1; i<edgeLabels.length; i++) {
+			if (edgeLabels[i]!=1)
 				return false;
 		}
 		return true;
