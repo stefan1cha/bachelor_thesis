@@ -28,16 +28,13 @@ public class PruferCode {
 		}
 		return true;
 	}
+	
+	public int getLength() {
+		return this.code.length;
+	}
 
 	@Override
 	public String toString() {
-		/*String res = "";
-		for (int i = 0; i < code.length; ++i) {
-			res+= Integer.toString(code[i]);
-		}
-		return res;
-		*/
 		return Arrays.toString(this.code);
-		//return code.toString();
 	}
 }

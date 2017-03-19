@@ -6,7 +6,7 @@ import java.util.Set;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.SimpleWeightedGraph;
 
-public class LabeledTree<V extends Number, E extends DefaultWeightedEdge> extends SimpleWeightedGraph<V, E> {
+public class LabeledTree<E extends DefaultWeightedEdge> extends SimpleWeightedGraph<Integer, E> {
 
 	/**
 	 * 
@@ -24,6 +24,7 @@ public class LabeledTree<V extends Number, E extends DefaultWeightedEdge> extend
 		// TODO Auto-generated constructor stub
 	}
 
+
 	/**
 	 * Adds an new weighted edge between the vertices v1 and v2 in the graph
 	 * 
@@ -35,7 +36,7 @@ public class LabeledTree<V extends Number, E extends DefaultWeightedEdge> extend
 	 *            the label of the edge to be added
 	 * @return void etc ?
 	 */
-	public void addEdge(V v1, V v2, int label) {
+	public void addEdge(int v1, int v2, int label) {
 		lastEdge = this.addEdge(v1, v2);
 		this.setEdgeWeight(lastEdge, label);
 	}
@@ -49,7 +50,7 @@ public class LabeledTree<V extends Number, E extends DefaultWeightedEdge> extend
 	 *            the second vertex
 	 * @return ? etc ?
 	 */
-	public int getEdgeWeight(V v1, V v2) {
+	public int getEdgeWeight(int v1, int v2) {
 		return (int) this.getEdgeWeight(this.getEdge(v1, v2));
 	}
 
@@ -57,21 +58,21 @@ public class LabeledTree<V extends Number, E extends DefaultWeightedEdge> extend
 	 * 
 	 */
 	public PruferCode getPruferCode() {
-		ArrayList<V> vertexList = new ArrayList<V>(this.vertexSet());
+		ArrayList<Integer> vertexList = new ArrayList<Integer>(this.vertexSet());
 		int n = vertexList.size();
-		
-		int[] result = new int[n-2];
-		
+
+		int[] result = new int[n - 2];
+
 		// TODO lazy evaluation
-		
+
 		@SuppressWarnings("unchecked")
-		LabeledTree<V,E> treeCopy = (LabeledTree<V, E>) this.clone();
+		LabeledTree<E> treeCopy = (LabeledTree<E>) this.clone();
 
 		for (int i = 0; i < n - 2; ++i) {
 			// does the for-each loop preserve order?
-			for (V iterator: vertexList) {
+			for (Integer iterator : vertexList) {
 				if (treeCopy.isLeaf(iterator)) {
-					result[i] = treeCopy.getFirstNeighborLabel(iterator).intValue(); 
+					result[i] = treeCopy.getFirstNeighborLabel(iterator);
 					treeCopy.removeVertex(iterator);
 					break;
 				}
@@ -79,16 +80,17 @@ public class LabeledTree<V extends Number, E extends DefaultWeightedEdge> extend
 		}
 		return new PruferCode(result);
 	}
-	
+
 	/**
 	 * Method description
+	 * 
 	 * @param v
 	 * @return
 	 */
-	private V getFirstNeighborLabel(V v) {
+	private int getFirstNeighborLabel(int v) {
 		Set<E> edges = this.edgesOf(v);
 		E firstEdge = null;
-		for (E iterator: edges) {
+		for (E iterator : edges) {
 			firstEdge = iterator;
 			break;
 		}
@@ -98,11 +100,10 @@ public class LabeledTree<V extends Number, E extends DefaultWeightedEdge> extend
 			return this.getEdgeSource(firstEdge);
 
 	}
-	
-	private boolean isLeaf(V vertex) {
+
+	private boolean isLeaf(int vertex) {
 		return this.degreeOf(vertex) == 1;
 	}
-	
 
 	/**
 	 * This 'serialVersionUID' variable is here just to avoid a warning.

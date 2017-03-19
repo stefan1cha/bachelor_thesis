@@ -10,7 +10,7 @@ public class Main {
 
 	public static void main(String[] args) {
 		
-		LabeledTree<Integer, DefaultWeightedEdge> lt = new LabeledTree<Integer, DefaultWeightedEdge>(DefaultWeightedEdge.class);
+		LabeledTree<DefaultWeightedEdge> lt = new LabeledTree<DefaultWeightedEdge>(DefaultWeightedEdge.class);
 		
 		for (int i = 1; i <= 6;++i) {
 			lt.addVertex(i);
