@@ -1,5 +1,6 @@
 package bachelor_thesis;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 
 public class PruferCode {
@@ -7,34 +8,30 @@ public class PruferCode {
 	/**
 	 * 
 	 */
-	private int[] code;
+	ArrayList<Integer> code;
 
 	public PruferCode(int[] arg) {
-		//code = new int [arg.length];
-		this.code = arg;
-		// TODO: Remove this (it has been used for debugging)
-		checkUniqueness(this.code);
+		this.code = new ArrayList<Integer>();
+		for (int i = 0; i < arg.length; ++i) {
+			this.code.add(arg[i]);
+		}
+		
 	}
 
-	/**
-	 * Debugging: Checks that each label appears at most once.
-	 */
-	public static boolean checkUniqueness(int[] a) {
-		int[] arr = a.clone();
-		Arrays.sort(arr);
-		for (int i = 0; i < arr.length - 1; ++i) {
-			if (arr[i] == arr[i + 1])
-				return false;
-		}
-		return true;
+	public PruferCode(ArrayList<Integer> arg) {
+		this.code = arg;
+	}
+	
+	public ArrayList<Integer> toList() {
+		return this.code;
 	}
 	
 	public int getLength() {
-		return this.code.length;
+		return this.code.size();
 	}
 
 	@Override
 	public String toString() {
-		return Arrays.toString(this.code);
+		return Arrays.toString(this.code.toArray());
 	}
 }

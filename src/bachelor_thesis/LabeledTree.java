@@ -1,7 +1,9 @@
 package bachelor_thesis;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Set;
+import java.util.Iterator;
 
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.SimpleWeightedGraph;
@@ -21,9 +23,48 @@ public class LabeledTree<E extends DefaultWeightedEdge> extends SimpleWeightedGr
 
 	public LabeledTree(Class<? extends E> edgeClass) {
 		super(edgeClass);
-		// TODO Auto-generated constructor stub
 	}
 
+	@SuppressWarnings("unchecked")
+	public LabeledTree(PruferCode pfc) {
+		super((Class<? extends E>) DefaultWeightedEdge.class);
+
+		int n = pfc.getLength() + 2; // number of vertices
+		int[] appears = new int[n + 1]; // appears[i] = k means that label i
+										// appears k times in the pfc
+		ArrayList<Integer> sequence = pfc.toList();
+
+		// initialize 'appears'
+		Iterator<Integer> iterator = sequence.iterator();
+		while (iterator.hasNext()) {
+			appears[iterator.next()]++;
+		}
+
+		System.out.println("appears: " + Arrays.toString(appears));
+		System.out.println("sequence: " + sequence + "\n\n");
+
+		int u;
+		for (int i = 0; i < n - 2; i++) {
+			// get first label
+			int v = sequence.get(0);
+			// remove first label
+			sequence.remove(0);
+			// search for smallest label u in {0,...,n-1} s.t. u is not in
+			// 'sequence' and then update 'sequence' and 'appears'
+			for (u = 0; u < appears.length; ++u) {
+				if (appears[u] == 0) {
+					sequence.add(u);
+					appears[u]++;
+					appears[v]--;
+					break;
+				}
+			}
+			System.out.println(i + " appears: " + Arrays.toString(appears));
+			System.out.println(i + " sequence: " + sequence + "\n\n");
+			this.addEdgeAndVertices(u, v);
+		}
+		
+	}
 
 	/**
 	 * Adds an new weighted edge between the vertices v1 and v2 in the graph
@@ -39,6 +80,18 @@ public class LabeledTree<E extends DefaultWeightedEdge> extends SimpleWeightedGr
 	public void addEdge(int v1, int v2, int label) {
 		lastEdge = this.addEdge(v1, v2);
 		this.setEdgeWeight(lastEdge, label);
+	}
+
+	/**
+	 * Adds the edge and ,if necessary, it adds the missing vertices before
+	 */
+	public void addEdgeAndVertices(int v1, int v2) {
+		if (!this.containsVertex(v1))
+			this.addVertex(v1);
+		if (!this.containsVertex(v2))
+			this.addVertex(v2);
+		this.addEdge(v1, v2);
+
 	}
 
 	/**
