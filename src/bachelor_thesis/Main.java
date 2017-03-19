@@ -1,46 +1,30 @@
 package bachelor_thesis;
 import org.jgrapht.Graph;
-import org.jgrapht.UndirectedGraph;
+
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.DefaultWeightedEdge;
-import org.jgrapht.graph.SimpleGraph;
 
-import java.util.Random;
 import java.util.Set;
 
 public class Main {
 
 	public static void main(String[] args) {
-
-		Random rnd = new Random(System.currentTimeMillis());
-
-		UndirectedGraph<Integer, DefaultEdge> g = new SimpleGraph<Integer, DefaultEdge>(DefaultEdge.class);
-		int n = 5;
-
-		for (int i = 0; i < n; i++)
-			g.addVertex(i);
-
-		// Create a random graph
 		
-		for (int i = 0; i < n; i++)
-			for (int j = i + 1; j < n; j++) {
-				if (rnd.nextInt(1000) < 500) {
-					g.addEdge(i, j);
-				}
-			}
+		LabeledTree<Integer, DefaultWeightedEdge> lt = new LabeledTree<Integer, DefaultWeightedEdge>(DefaultWeightedEdge.class);
+		
+		for (int i = 1; i <= 6;++i) {
+			lt.addVertex(i);
+		}
+		
+		lt.addEdge(1,4);
+		lt.addEdge(2,4);
+		lt.addEdge(3,4);
+		lt.addEdge(4,5);
+		lt.addEdge(5,6);
+		
+		System.out.println("Prufer Code: " + lt.getPruferCode());
 		
 		
-		// Create a graceful star S_5, i.e. the compete bipartite graph K_1_4
-		/*
-		g.addEdge(0, 1);
-		g.addEdge(0, 2);
-		g.addEdge(0, 3);
-		g.addEdge(0, 4);
-		*/
-		
-		System.out.println(g);
-		
-		System.out.println(checkGraceful(g));
 	}
 	
 	public static boolean checkGraceful (Graph<Integer, DefaultEdge> g) {
