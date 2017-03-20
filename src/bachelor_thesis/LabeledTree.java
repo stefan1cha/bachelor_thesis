@@ -2,13 +2,16 @@ package bachelor_thesis;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.Iterator;
+import java.util.LinkedList;
 
-import org.jgrapht.graph.DefaultEdge;
+import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.SimpleWeightedGraph;
+import org.jgrapht.GraphTests;
 
-public class LabeledTree extends SimpleWeightedGraph<Integer, DefaultEdge> {
+public class LabeledTree extends SimpleWeightedGraph<Integer, DefaultWeightedEdge> {
 
 	/**
 	 * 
@@ -19,7 +22,7 @@ public class LabeledTree extends SimpleWeightedGraph<Integer, DefaultEdge> {
 	 * Stores last edge that has been added. This variable eases the
 	 * implementation of {@link #addEdge(Object, Object, int) addEdge}.
 	 */
-	private DefaultEdge lastEdge;
+	private DefaultWeightedEdge lastEdge;
 
 	public LabeledTree(PruferCode pfc, boolean labeled) {
 
@@ -27,7 +30,7 @@ public class LabeledTree extends SimpleWeightedGraph<Integer, DefaultEdge> {
 		// But this will be deferred because the getPruferCode() method needs to
 		// be thoroughly tested.
 
-		super(DefaultEdge.class);
+		super(DefaultWeightedEdge.class);
 
 		int n = pfc.getLength() + 2; // number of vertices
 		int[] appears = new int[n + 1]; // appears[i] = k means that label i
@@ -83,12 +86,12 @@ public class LabeledTree extends SimpleWeightedGraph<Integer, DefaultEdge> {
 			}
 		}
 		this.addEdgeAndVertices(u, v);
-		
+
 		if (labeled)
 			this.labelEdges();
-		
+
 	}
-	
+
 	/**
 	 * 
 	 */
@@ -96,7 +99,7 @@ public class LabeledTree extends SimpleWeightedGraph<Integer, DefaultEdge> {
 	// TODO public (a collection of tree) getFlips(edge e)
 
 	public LabeledTree() {
-		super(DefaultEdge.class);
+		super(DefaultWeightedEdge.class);
 		// TODO Auto-generated constructor stub
 	}
 
@@ -132,12 +135,48 @@ public class LabeledTree extends SimpleWeightedGraph<Integer, DefaultEdge> {
 	 * 
 	 */
 	public void labelEdges() {
-		for (DefaultEdge e : this.edgeSet()) {
+		for (DefaultWeightedEdge e : this.edgeSet()) {
 			int v = this.getEdgeSource(e);
 			int u = this.getEdgeTarget(e);
-			this.setEdgeWeight(e, Math.abs(u-v));
+			this.setEdgeWeight(e, Math.abs(u - v));
 
 		}
+	}
+
+	/**
+	 * 
+	 */
+	public boolean isGraceful() {
+		int[] vertexLabels = new int[this.edgeSet().size() + 1];
+		Set<Integer> vertices = this.vertexSet();
+		if (this.vertexSet().size() != this.edgeSet().size() + 1) {
+			System.out.println(this.vertexSet().size() + " , " + this.edgeSet().size());
+			throw new RuntimeException(); // debug
+			// return false;
+		}
+		for (Integer v : vertices) {
+			vertexLabels[v]++;
+		}
+		for (int i = 0; i < vertexLabels.length; i++) {
+			if (vertexLabels[i] != 1) {
+				System.out.println("nope"); // debug
+				return false;
+			}
+		}
+
+		int[] edgeLabels = new int[this.edgeSet().size() + 1];
+		Set<DefaultWeightedEdge> edges = this.edgeSet();
+		for (DefaultWeightedEdge e : edges) {
+			int max = Math.max(this.getEdgeSource(e), this.getEdgeTarget(e));
+			int min = Math.min(this.getEdgeSource(e), this.getEdgeTarget(e));
+			edgeLabels[max - min]++;
+		}
+
+		for (int i = 1; i < edgeLabels.length; i++) {
+			if (edgeLabels[i] != 1)
+				return false;
+		}
+		return true;
 	}
 
 	/**
@@ -191,9 +230,9 @@ public class LabeledTree extends SimpleWeightedGraph<Integer, DefaultEdge> {
 	 * @return
 	 */
 	private int getFirstNeighborLabel(int v) {
-		Set<DefaultEdge> edges = this.edgesOf(v);
-		DefaultEdge firstEdge = null;
-		for (DefaultEdge iterator : edges) {
+		Set<DefaultWeightedEdge> edges = this.edgesOf(v);
+		DefaultWeightedEdge firstEdge = null;
+		for (DefaultWeightedEdge iterator : edges) {
 			firstEdge = iterator;
 			break;
 		}
@@ -202,6 +241,50 @@ public class LabeledTree extends SimpleWeightedGraph<Integer, DefaultEdge> {
 		else
 			return this.getEdgeSource(firstEdge);
 
+	}
+
+	/**
+	 * 
+	 * @param
+	 * @return
+	 */
+	public Set<LabeledTree> getFlipTrees() {
+		// TODO implement method
+
+		Set<LabeledTree> flipTrees = new HashSet<LabeledTree>();
+		for (DefaultWeightedEdge e : this.edgeSet()) {
+			// create copy of tree
+			LabeledTree treeCopy = (LabeledTree) this.clone();
+			// try to attach the edge 'e' somewhere else
+			// choose the vertex sets such that we avoid attaching the edge back
+			// to its original place
+			Set<Integer> vertexSet1 = this.vertexSet();
+			// why does this yield an error:
+			// vertexSet1.remove(this.getEdgeSource(e));
+			Set<Integer> vertexSet2 = this.vertexSet();
+			// why does this yield an error:
+			// vertexSet2.remove(this.getEdgeSource(e));
+
+			// remove edge 'e'
+			treeCopy.removeEdge(e);
+
+			for (Integer i : vertexSet1) {
+				for (Integer j : vertexSet2) {
+					if (i != j && !treeCopy.containsEdge(i, j)) {
+						treeCopy.addEdge(i, j);
+						// System.out.println(treeCopy);
+						if (treeCopy.isGraceful() && GraphTests.isTree(treeCopy)) {
+							System.out.println("-> " + treeCopy);
+							flipTrees.add(treeCopy);
+						}
+						// remove edge 'e' for next for-loop
+						treeCopy.removeEdge(i, j);
+					}
+				}
+			}
+		}
+		//flipTrees.remove(this);
+		return flipTrees;
 	}
 
 	private boolean isLeaf(int vertex) {

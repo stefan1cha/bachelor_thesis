@@ -10,7 +10,7 @@ public class FlipGraph extends SimpleGraph<LabeledTree, DefaultEdge> {
 
 	public FlipGraph(LabeledTree lt) {
 		super(DefaultEdge.class);
-		
+		//TODO implement constructor
 	}
 	
 	public FlipGraph(int n) {
@@ -18,6 +18,7 @@ public class FlipGraph extends SimpleGraph<LabeledTree, DefaultEdge> {
 		// TODO implement constructor
 		throw new RuntimeErrorException(null, "Stefan says: This constructor has not been implemented yet.");
 	}
+	
 
 	/**
 	 * 
