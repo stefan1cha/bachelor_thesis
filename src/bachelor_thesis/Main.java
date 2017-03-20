@@ -1,7 +1,6 @@
 package bachelor_thesis;
 
 import org.jgrapht.Graph;
-import org.jgrapht.GraphTests;
 import org.jgrapht.graph.DefaultEdge;
 
 import java.util.Set;
@@ -58,6 +57,10 @@ public class Main {
 		LabeledTree lt6 = new LabeledTree(new PruferCode(new int[] { 0, 0 }), true);
 		System.out.println("\n\nFlip trees of " + lt6 + " are:\n" + lt6.getFlipTrees());
 
+		// Test 7
+		LabeledTree lt7 = new LabeledTree(new PruferCode(new int[] { 3, 1 }), true);
+		System.out.println("\n\nFlip trees of " + lt7 + " are:\n" + lt7.getFlipTrees());
+
 		// Remove this
 		LabeledTree ltx = new LabeledTree();
 
@@ -82,7 +85,7 @@ public class Main {
 		lty.addEdge(3, 2);
 		lty.addEdge(4, 3);
 		lty.addEdge(5, 4);
-		
+
 		LabeledTree ltz = new LabeledTree();
 
 		for (int i = 0; i < 6; ++i) {
