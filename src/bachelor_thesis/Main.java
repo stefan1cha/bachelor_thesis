@@ -53,16 +53,49 @@ public class Main {
 		LabeledTree lt5 = new LabeledTree(new PruferCode(new int[] { 8, 8, 3, 5, 2, 2, 2 }), true);
 		System.out.println("\n\nLabeled Tree: " + lt5);
 		System.out.println("Graceful: " + lt5.isGraceful());
-		
+
 		// Test 6
-		LabeledTree lt6 = new LabeledTree(new PruferCode(new int[] {0,0}), true);
+		LabeledTree lt6 = new LabeledTree(new PruferCode(new int[] { 0, 0 }), true);
 		System.out.println("\n\nFlip trees of " + lt6 + " are:\n" + lt6.getFlipTrees());
-		
+
 		// Remove this
 		LabeledTree ltx = new LabeledTree();
-		ltx.addVertex(0);
-		ltx.addVertex(1);
-		System.out.println("\n\n\nltx " + GraphTests.isTree(ltx));
+
+		for (int i = 0; i < 6; ++i) {
+			ltx.addVertex(i);
+		}
+
+		ltx.addEdge(0, 3);
+		ltx.addEdge(1, 3);
+		ltx.addEdge(2, 3);
+		ltx.addEdge(3, 4);
+		ltx.addEdge(4, 5);
+
+		LabeledTree lty = new LabeledTree();
+
+		for (int i = 0; i < 6; ++i) {
+			lty.addVertex(i);
+		}
+
+		lty.addEdge(3, 0);
+		lty.addEdge(1, 3);
+		lty.addEdge(3, 2);
+		lty.addEdge(4, 3);
+		lty.addEdge(5, 4);
+		
+		LabeledTree ltz = new LabeledTree();
+
+		for (int i = 0; i < 6; ++i) {
+			ltz.addVertex(i);
+		}
+
+		ltz.addEdge(0, 3);
+		ltz.addEdge(1, 3);
+		ltz.addEdge(2, 3);
+		ltz.addEdge(3, 4);
+		ltz.addEdge(4, 5);
+
+		System.out.println("\n\n\nhere: " + ltx.equals(ltz));
 
 	}
 

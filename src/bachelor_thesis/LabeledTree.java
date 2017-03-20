@@ -5,8 +5,8 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.Iterator;
-import java.util.LinkedList;
 
+import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.SimpleWeightedGraph;
 import org.jgrapht.GraphTests;
@@ -274,8 +274,10 @@ public class LabeledTree extends SimpleWeightedGraph<Integer, DefaultWeightedEdg
 						treeCopy.addEdge(i, j);
 						// System.out.println(treeCopy);
 						if (treeCopy.isGraceful() && GraphTests.isTree(treeCopy)) {
-							System.out.println("-> " + treeCopy);
-							flipTrees.add(treeCopy);
+							System.out.println("-> " + i + ", " + j + ": "+ treeCopy);
+							//flipTrees.add((LabeledTree) treeCopy.clone()); // clone() is VERY important here
+							addTree(flipTrees, (LabeledTree) treeCopy.clone());// clone() is VERY important here
+							System.out.println("flipTrees :" + flipTrees);
 						}
 						// remove edge 'e' for next for-loop
 						treeCopy.removeEdge(i, j);
@@ -283,12 +285,62 @@ public class LabeledTree extends SimpleWeightedGraph<Integer, DefaultWeightedEdg
 				}
 			}
 		}
-		//flipTrees.remove(this);
+		removeTree(flipTrees, (LabeledTree) this.clone());
 		return flipTrees;
 	}
 
 	private boolean isLeaf(int vertex) {
 		return this.degreeOf(vertex) == 1;
+	}
+	
+	public boolean equals(Object other) {
+		
+		if (other.getClass() != this.getClass()){
+			throw new RuntimeException("Debugging");
+			//return false;
+		}
+		else {
+			LabeledTree lt = (LabeledTree) other;
+			for (Integer v: this.vertexSet())
+				if (!lt.vertexSet().contains(v))
+					return false;
+			for (Integer v: lt.vertexSet())
+				if (!this.vertexSet().contains(v))
+					return false;
+			for (DefaultWeightedEdge e: this.edgeSet()) {
+				int u = this.getEdgeSource(e);
+				int v = this.getEdgeTarget(e);
+				if (!lt.containsEdge(u,v))
+					return false;
+			}
+			for (DefaultWeightedEdge e: lt.edgeSet()) {
+				int u = lt.getEdgeSource(e);
+				int v = lt.getEdgeTarget(e);
+				if (!this.containsEdge(u,v))
+					return false;
+			}
+		}
+		return true;
+	}
+	
+	public static boolean addTree(Set<LabeledTree> set, LabeledTree lt) {
+		Iterator<LabeledTree> iterator = set.iterator();
+		while (iterator.hasNext()) {
+			if (lt.equals(iterator.next()))
+				return false;
+		}
+		set.add(lt);
+		return true;
+	}
+	
+	public static boolean removeTree(Set<LabeledTree> set, LabeledTree lt) {
+		for (LabeledTree iterator: set) {
+			if (iterator.equals(lt)) {
+				set.remove(iterator);
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/**
