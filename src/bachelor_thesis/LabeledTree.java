@@ -2,6 +2,7 @@ package bachelor_thesis;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Set;
 import java.util.Iterator;
 
@@ -32,6 +33,8 @@ public class LabeledTree<E extends DefaultWeightedEdge> extends SimpleWeightedGr
 		int n = pfc.getLength() + 2; // number of vertices
 		int[] appears = new int[n + 1]; // appears[i] = k means that label i
 										// appears k times in the pfc
+		int[] taken = new int[n + 1]; // which numbers are available for u (see
+										// below)
 		ArrayList<Integer> sequence = pfc.toList();
 
 		// initialize 'appears'
@@ -40,30 +43,47 @@ public class LabeledTree<E extends DefaultWeightedEdge> extends SimpleWeightedGr
 			appears[iterator.next()]++;
 		}
 
-		System.out.println("appears: " + Arrays.toString(appears));
-		System.out.println("sequence: " + sequence + "\n\n");
+		//System.out.println("appears: " + Arrays.toString(appears));
+		//System.out.println("sequence: " + sequence + "\n\n");
 
 		int u;
+		int v;
 		for (int i = 0; i < n - 2; i++) {
 			// get first label
-			int v = sequence.get(0);
+			v = sequence.get(0);
 			// remove first label
 			sequence.remove(0);
-			// search for smallest label u in {0,...,n-1} s.t. u is not in
-			// 'sequence' and then update 'sequence' and 'appears'
+			// search for smallest label u in 'taken' s.t. u is not in
+			// 'sequence
+			// Then update 'sequence' and 'appears'
 			for (u = 0; u < appears.length; ++u) {
-				if (appears[u] == 0) {
+				if (appears[u] == 0 && taken[u] == 0) {
 					sequence.add(u);
 					appears[u]++;
 					appears[v]--;
+					taken[u]++;
 					break;
 				}
 			}
-			System.out.println(i + " appears: " + Arrays.toString(appears));
-			System.out.println(i + " sequence: " + sequence + "\n\n");
+			//System.out.println(i + " appears: " + Arrays.toString(appears));
+			//System.out.println(i + " sequence: " + sequence);
+			//System.out.println(i + " taken:" + Arrays.toString(taken) + "\n\n");
 			this.addEdgeAndVertices(u, v);
 		}
-		
+
+		u = v = -1;
+		for (int i = 0; i < taken.length; ++i) {
+			if (taken[i] == 0) {
+				if (u == -1)
+					u = i;
+				else if (v == -1)
+					v = i;
+				else
+					break;
+			}
+		}
+		this.addEdgeAndVertices(u, v);
+
 	}
 
 	/**
@@ -112,6 +132,7 @@ public class LabeledTree<E extends DefaultWeightedEdge> extends SimpleWeightedGr
 	 */
 	public PruferCode getPruferCode() {
 		ArrayList<Integer> vertexList = new ArrayList<Integer>(this.vertexSet());
+		Collections.sort(vertexList);
 		int n = vertexList.size();
 
 		int[] result = new int[n - 2];
@@ -122,6 +143,7 @@ public class LabeledTree<E extends DefaultWeightedEdge> extends SimpleWeightedGr
 		LabeledTree<E> treeCopy = (LabeledTree<E>) this.clone();
 
 		for (int i = 0; i < n - 2; ++i) {
+			//System.out.println(treeCopy);
 			// does the for-each loop preserve order?
 			for (Integer iterator : vertexList) {
 				if (treeCopy.isLeaf(iterator)) {
@@ -131,6 +153,7 @@ public class LabeledTree<E extends DefaultWeightedEdge> extends SimpleWeightedGr
 				}
 			}
 		}
+		//System.out.println(treeCopy);
 		return new PruferCode(result);
 	}
 
