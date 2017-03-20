@@ -2,8 +2,8 @@ package bachelor_thesis;
 
 import org.jgrapht.Graph;
 
+
 import org.jgrapht.graph.DefaultEdge;
-import org.jgrapht.graph.DefaultWeightedEdge;
 
 import java.util.Set;
 
@@ -13,7 +13,7 @@ public class Main {
 
 		
 		// Test 1
-		LabeledTree<DefaultWeightedEdge> lt = new LabeledTree<DefaultWeightedEdge>(DefaultWeightedEdge.class);
+		LabeledTree lt = new LabeledTree();
 
 		for (int i = 0; i < 6; ++i) {
 			lt.addVertex(i);
@@ -27,11 +27,11 @@ public class Main {
 
 		System.out.println("Prufer Code: " + lt.getPruferCode());
 
-		System.out.println("Labeled Tree: " + new LabeledTree<DefaultWeightedEdge>(lt.getPruferCode()));
+		System.out.println("Labeled Tree: " + new LabeledTree(lt.getPruferCode(),false));
 		
 		// Test 2
 
-		LabeledTree<DefaultWeightedEdge> lt2 = new LabeledTree<>(new PruferCode(new int[] { 0, 6, 5, 5, 0 }));
+		LabeledTree lt2 = new LabeledTree(new PruferCode(new int[] { 0, 6, 5, 5, 0 }), false);
 
 		System.out.println("\n\nLabeled Tree: " + lt2);
 

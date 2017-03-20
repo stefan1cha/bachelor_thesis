@@ -1,15 +1,14 @@
 package bachelor_thesis;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Set;
 import java.util.Iterator;
 
-import org.jgrapht.graph.DefaultWeightedEdge;
+import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.SimpleWeightedGraph;
 
-public class LabeledTree<E extends DefaultWeightedEdge> extends SimpleWeightedGraph<Integer, E> {
+public class LabeledTree extends SimpleWeightedGraph<Integer, DefaultEdge> {
 
 	/**
 	 * 
@@ -20,15 +19,15 @@ public class LabeledTree<E extends DefaultWeightedEdge> extends SimpleWeightedGr
 	 * Stores last edge that has been added. This variable eases the
 	 * implementation of {@link #addEdge(Object, Object, int) addEdge}.
 	 */
-	private E lastEdge;
+	private DefaultEdge lastEdge;
 
-	public LabeledTree(Class<? extends E> edgeClass) {
-		super(edgeClass);
-	}
+	public LabeledTree(PruferCode pfc, boolean labeled) {
 
-	@SuppressWarnings("unchecked")
-	public LabeledTree(PruferCode pfc) {
-		super((Class<? extends E>) DefaultWeightedEdge.class);
+		// TODO for lazy evaluation do this: this.pfCode = pfc.
+		// But this will be deferred because the getPruferCode() method needs to
+		// be thoroughly tested.
+
+		super(DefaultEdge.class);
 
 		int n = pfc.getLength() + 2; // number of vertices
 		int[] appears = new int[n + 1]; // appears[i] = k means that label i
@@ -43,8 +42,8 @@ public class LabeledTree<E extends DefaultWeightedEdge> extends SimpleWeightedGr
 			appears[iterator.next()]++;
 		}
 
-		//System.out.println("appears: " + Arrays.toString(appears));
-		//System.out.println("sequence: " + sequence + "\n\n");
+		// System.out.println("appears: " + Arrays.toString(appears));
+		// System.out.println("sequence: " + sequence + "\n\n");
 
 		int u;
 		int v;
@@ -65,9 +64,10 @@ public class LabeledTree<E extends DefaultWeightedEdge> extends SimpleWeightedGr
 					break;
 				}
 			}
-			//System.out.println(i + " appears: " + Arrays.toString(appears));
-			//System.out.println(i + " sequence: " + sequence);
-			//System.out.println(i + " taken:" + Arrays.toString(taken) + "\n\n");
+			// System.out.println(i + " appears: " + Arrays.toString(appears));
+			// System.out.println(i + " sequence: " + sequence);
+			// System.out.println(i + " taken:" + Arrays.toString(taken) +
+			// "\n\n");
 			this.addEdgeAndVertices(u, v);
 		}
 
@@ -83,7 +83,21 @@ public class LabeledTree<E extends DefaultWeightedEdge> extends SimpleWeightedGr
 			}
 		}
 		this.addEdgeAndVertices(u, v);
+		
+		if (labeled)
+			this.labelEdges();
+		
+	}
+	
+	/**
+	 * 
+	 */
+	// Precondition: tree is labeled
+	// TODO public (a collection of tree) getFlips(edge e)
 
+	public LabeledTree() {
+		super(DefaultEdge.class);
+		// TODO Auto-generated constructor stub
 	}
 
 	/**
@@ -115,6 +129,18 @@ public class LabeledTree<E extends DefaultWeightedEdge> extends SimpleWeightedGr
 	}
 
 	/**
+	 * 
+	 */
+	public void labelEdges() {
+		for (DefaultEdge e : this.edgeSet()) {
+			int v = this.getEdgeSource(e);
+			int u = this.getEdgeTarget(e);
+			this.setEdgeWeight(e, Math.abs(u-v));
+
+		}
+	}
+
+	/**
 	 * method description
 	 * 
 	 * @param v1
@@ -131,6 +157,8 @@ public class LabeledTree<E extends DefaultWeightedEdge> extends SimpleWeightedGr
 	 * 
 	 */
 	public PruferCode getPruferCode() {
+		if (this.pfCode != null)
+			return this.pfCode;
 		ArrayList<Integer> vertexList = new ArrayList<Integer>(this.vertexSet());
 		Collections.sort(vertexList);
 		int n = vertexList.size();
@@ -139,11 +167,10 @@ public class LabeledTree<E extends DefaultWeightedEdge> extends SimpleWeightedGr
 
 		// TODO lazy evaluation
 
-		@SuppressWarnings("unchecked")
-		LabeledTree<E> treeCopy = (LabeledTree<E>) this.clone();
+		LabeledTree treeCopy = (LabeledTree) this.clone();
 
 		for (int i = 0; i < n - 2; ++i) {
-			//System.out.println(treeCopy);
+			// System.out.println(treeCopy);
 			// does the for-each loop preserve order?
 			for (Integer iterator : vertexList) {
 				if (treeCopy.isLeaf(iterator)) {
@@ -153,7 +180,7 @@ public class LabeledTree<E extends DefaultWeightedEdge> extends SimpleWeightedGr
 				}
 			}
 		}
-		//System.out.println(treeCopy);
+		// System.out.println(treeCopy);
 		return new PruferCode(result);
 	}
 
@@ -164,9 +191,9 @@ public class LabeledTree<E extends DefaultWeightedEdge> extends SimpleWeightedGr
 	 * @return
 	 */
 	private int getFirstNeighborLabel(int v) {
-		Set<E> edges = this.edgesOf(v);
-		E firstEdge = null;
-		for (E iterator : edges) {
+		Set<DefaultEdge> edges = this.edgesOf(v);
+		DefaultEdge firstEdge = null;
+		for (DefaultEdge iterator : edges) {
 			firstEdge = iterator;
 			break;
 		}
