@@ -60,7 +60,11 @@ public class Main {
 		// Test 7
 		LabeledTree lt7 = new LabeledTree(new PruferCode(new int[] { 3, 1 }), true);
 		System.out.println("\n\nFlip trees of " + lt7 + " are:\n" + lt7.getFlipTrees());
-
+		
+		// Test 8
+		LabeledTree lt8 = new LabeledTree(new PruferCode(new int[]{2}),true);
+		System.out.println("\n\nFlip trees of " + lt8 + " are:\n" + lt8.getFlipTrees());
+		
 		// Remove this
 		LabeledTree ltx = new LabeledTree();
 
