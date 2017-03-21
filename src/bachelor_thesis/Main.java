@@ -121,13 +121,15 @@ public class Main {
 
 		// Test 11
 		FlipGraph flippity = new FlipGraph(new LabeledTree(new PruferCode(new int[] { 0 }), true));
-		flippity.createFlipGraph(new LabeledTree(new PruferCode(new int[] { 0 }), true));
 		System.out.println("\n\n\n" + flippity);
 
 		// Test 12
 		FlipGraph flippityFlip = new FlipGraph(new LabeledTree(new PruferCode(new int[] { 0, 0 }), true));
-		flippityFlip.createFlipGraph(new LabeledTree(new PruferCode(new int[] { 0, 0 }), true));
 		System.out.println(flippityFlip);
+		
+		// Test 13
+		FlipGraph flippityFlop = new FlipGraph(4);
+		System.out.println(flippityFlop);
 
 	}
 

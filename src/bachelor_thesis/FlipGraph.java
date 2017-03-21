@@ -5,19 +5,17 @@ import org.jgrapht.graph.SimpleGraph;
 import java.util.Iterator;
 import java.util.Set;
 
-import javax.management.RuntimeErrorException;
-
 import org.antlr.v4.runtime.misc.Pair;
 import org.jgrapht.graph.DefaultEdge;
 
 public class FlipGraph extends SimpleGraph<LabeledTree, DefaultEdge> {
 
 	int n = -1;
-	LabeledTree lt = null;
+	//LabeledTree lt = null;
 
 	public FlipGraph(LabeledTree lt) {
 		super(DefaultEdge.class);
-		this.lt = lt;
+		this.createFlipGraph(lt);
 		// TODO check if 'lt' is graceful
 		// TODO implement constructor
 
@@ -28,10 +26,30 @@ public class FlipGraph extends SimpleGraph<LabeledTree, DefaultEdge> {
 		// TODO implement constructor
 		// idea: start from a path because it is easy to find a graceful
 		// labeling
-		throw new RuntimeErrorException(null, "Stefan says: This constructor has not been implemented yet.");
+		if (n < 0)
+			throw new IllegalArgumentException();
+		LabeledTree lt = new LabeledTree();
+		int min = 0;
+		int max = n;
+		
+		lt.addVertex(0);
+		for (int i = 1; i<n; i++) {
+			if (i % 2 == 0){
+				min++;
+				lt.addVertex(min);
+				lt.addEdge(min, max);
+			} else {
+				max--;
+				lt.addVertex(max);
+				lt.addEdge(min, max);
+			}
+		}
+		
+		this.createFlipGraph(lt);
+		
 	}
 
-	public void createFlipGraph(LabeledTree lt) {
+	private void createFlipGraph(LabeledTree lt) {
 		this.addFlipNode(lt);
 		Set<LabeledTree> neighbors = lt.getFlipTrees();
 		this.addFlipNodeSet(neighbors);
@@ -82,9 +100,9 @@ public class FlipGraph extends SimpleGraph<LabeledTree, DefaultEdge> {
 			// System.out.println("lt" + i + ": " + flipNodes[i]);
 			result += "lt" + i + ": " + flipNodes[i] + "\n";
 		}
-		
+
 		result += "\nEdges:\n";
-		
+
 		Iterator<DefaultEdge> iterator = this.edgeSet().iterator();
 		while (iterator.hasNext()) {
 			result += this.getEdgeIndicesFromArray(iterator.next(), flipNodes) + ", ";
@@ -104,7 +122,7 @@ public class FlipGraph extends SimpleGraph<LabeledTree, DefaultEdge> {
 					b = i;
 			}
 		}
-		return new Pair<Integer, Integer>(a,b);
+		return new Pair<Integer, Integer>(a, b);
 	}
 
 	/**
