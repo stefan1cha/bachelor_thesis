@@ -124,6 +124,11 @@ public class Main {
 		flippity.createFlipGraph(new LabeledTree(new PruferCode(new int[] { 0 }), true));
 		System.out.println("\n\n\n" + flippity);
 
+		// Test 12
+		FlipGraph flippityFlip = new FlipGraph(new LabeledTree(new PruferCode(new int[] { 0, 0 }), true));
+		flippityFlip.createFlipGraph(new LabeledTree(new PruferCode(new int[] { 0, 0 }), true));
+		System.out.println(flippityFlip);
+
 	}
 
 	public static boolean checkGraceful(Graph<Integer, DefaultEdge> g) {
