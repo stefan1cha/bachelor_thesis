@@ -29,7 +29,6 @@ public class Main {
 		System.out.println("Graceful: " + lt.isGraceful());
 
 		// Test 2
-
 		LabeledTree lt2 = new LabeledTree(new PruferCode(new int[] { 0, 6, 5, 5, 0 }), false);
 
 		System.out.println("\n\nLabeled Tree: " + lt2);

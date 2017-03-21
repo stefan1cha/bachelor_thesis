@@ -10,12 +10,14 @@ public class FlipGraph extends SimpleGraph<LabeledTree, DefaultEdge> {
 
 	public FlipGraph(LabeledTree lt) {
 		super(DefaultEdge.class);
+		// TODO check if 'lt' is graceful
 		//TODO implement constructor
 	}
 	
 	public FlipGraph(int n) {
 		super(DefaultEdge.class);
 		// TODO implement constructor
+		// idea: start from a path because it is easy to find a graceful labeling
 		throw new RuntimeErrorException(null, "Stefan says: This constructor has not been implemented yet.");
 	}
 	
