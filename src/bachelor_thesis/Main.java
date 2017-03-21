@@ -130,6 +130,10 @@ public class Main {
 		// Test 13
 		FlipGraph flippityFlop = new FlipGraph(4);
 		System.out.println(flippityFlop);
+		
+		// Test 14
+		FlipGraph flippityFlap = new FlipGraph(5);
+		System.out.println(flippityFlap);
 
 	}
 

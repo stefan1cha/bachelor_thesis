@@ -11,21 +11,16 @@ import org.jgrapht.graph.DefaultEdge;
 public class FlipGraph extends SimpleGraph<LabeledTree, DefaultEdge> {
 
 	int n = -1;
-	//LabeledTree lt = null;
 
 	public FlipGraph(LabeledTree lt) {
 		super(DefaultEdge.class);
+		if (!lt.isGraceful())
+			throw new IllegalArgumentException();
 		this.createFlipGraph(lt);
-		// TODO check if 'lt' is graceful
-		// TODO implement constructor
-
 	}
 
 	public FlipGraph(int n) {
 		super(DefaultEdge.class);
-		// TODO implement constructor
-		// idea: start from a path because it is easy to find a graceful
-		// labeling
 		if (n < 0)
 			throw new IllegalArgumentException();
 		LabeledTree lt = new LabeledTree();
@@ -54,23 +49,36 @@ public class FlipGraph extends SimpleGraph<LabeledTree, DefaultEdge> {
 		Set<LabeledTree> neighbors = lt.getFlipTrees();
 		this.addFlipNodeSet(neighbors);
 		Iterator<LabeledTree> iterator = neighbors.iterator();
-		// boolean updateOccured = false;
 		while (iterator.hasNext()) {
 			LabeledTree current = iterator.next();
 			if (!this.equals(current) && !this.containsFlipEdge(lt, current)) {
 				this.addFlipNode(current);
-				this.addEdge(lt, current);
+				System.out.println("\n\n->" + lt);
+				System.out.println("->" + current);
+				System.out.println(this.containsVertex(current));
+				this.addFlipEdgeAux(lt, current);
 				this.createFlipGraph(current);
-				// updateOccured = true;
 			}
 		}
+	}
+	
+	private void addFlipEdgeAux(LabeledTree lt1, LabeledTree lt2) {
+		Iterator<LabeledTree> iterator = this.vertexSet().iterator();
+		while (iterator.hasNext()) {
+			LabeledTree current = iterator.next();
+			if (lt1.equals(current))
+				lt1 = current;
+			if (lt2.equals(current))
+				lt2 = current;
+		}
+		this.addEdge(lt1, lt2);
 	}
 
 	public void addFlipNode(LabeledTree lt) {
 		if (!lt.isContainedIn(this.vertexSet()))
 			this.addVertex(lt);
 	}
-
+	
 	public boolean containsFlipEdge(LabeledTree lt1, LabeledTree lt2) {
 		Iterator<DefaultEdge> iterator = this.edgeSet().iterator();
 		while (iterator.hasNext()) {
@@ -125,6 +133,7 @@ public class FlipGraph extends SimpleGraph<LabeledTree, DefaultEdge> {
 		return new Pair<Integer, Integer>(a, b);
 	}
 
+	
 	/**
 	 * 
 	 */

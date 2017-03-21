@@ -24,7 +24,7 @@ public class LabeledTree extends SimpleWeightedGraph<Integer, DefaultWeightedEdg
 	private DefaultWeightedEdge lastEdge;
 
 	public LabeledTree(PruferCode pfc, boolean labeled) {
-
+		
 		// TODO for lazy evaluation do this: this.pfCode = pfc.
 		// But this will be deferred because the getPruferCode() method needs to
 		// be thoroughly tested.
@@ -296,7 +296,7 @@ public class LabeledTree extends SimpleWeightedGraph<Integer, DefaultWeightedEdg
 	private boolean isLeaf(int vertex) {
 		return this.degreeOf(vertex) == 1;
 	}
-
+	
 	public boolean equals(Object other) {
 
 		if (other.getClass() != this.getClass()) {
