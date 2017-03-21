@@ -3,6 +3,8 @@ package bachelor_thesis;
 import org.jgrapht.Graph;
 import org.jgrapht.graph.DefaultEdge;
 
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Set;
 
 public class Main {
@@ -59,11 +61,11 @@ public class Main {
 		// Test 7
 		LabeledTree lt7 = new LabeledTree(new PruferCode(new int[] { 3, 1 }), true);
 		System.out.println("\n\nFlip trees of " + lt7 + " are:\n" + lt7.getFlipTrees());
-		
+
 		// Test 8
-		LabeledTree lt8 = new LabeledTree(new PruferCode(new int[]{2}),true);
+		LabeledTree lt8 = new LabeledTree(new PruferCode(new int[] { 2 }), true);
 		System.out.println("\n\nFlip trees of " + lt8 + " are:\n" + lt8.getFlipTrees());
-		
+
 		// Remove this
 		LabeledTree ltx = new LabeledTree();
 
@@ -102,6 +104,25 @@ public class Main {
 		ltz.addEdge(4, 5);
 
 		System.out.println("\n\n\nhere: " + ltx.equals(ltz));
+
+		// Test 9
+		System.out.println("\n\n\ntesting isContainedIn(): "
+				+ ltx.isContainedIn(new HashSet<LabeledTree>(Arrays.asList(lt5, lt3, lt2))));
+
+		// Test 10
+		LabeledTree lt10 = new LabeledTree();
+		lt10.addVertex(0);
+		lt10.addVertex(0);
+		lt10.addVertex(0);
+		lt10.addVertex(0);
+		lt10.addVertex(0);
+		lt10.addVertex(0);
+		System.out.println(lt10.vertexSet().size());
+
+		// Test 11
+		FlipGraph flippity = new FlipGraph(new LabeledTree(new PruferCode(new int[] { 0 }), true));
+		flippity.createFlipGraph(new LabeledTree(new PruferCode(new int[] { 0 }), true));
+		System.out.println("\n\n\n" + flippity);
 
 	}
 

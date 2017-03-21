@@ -149,7 +149,7 @@ public class LabeledTree extends SimpleWeightedGraph<Integer, DefaultWeightedEdg
 		int[] vertexLabels = new int[this.edgeSet().size() + 1];
 		Set<Integer> vertices = this.vertexSet();
 		if (this.vertexSet().size() != this.edgeSet().size() + 1) {
-			System.out.println(this.vertexSet().size() + " , " + this.edgeSet().size());
+			//System.out.println(this.vertexSet().size() + " , " + this.edgeSet().size());
 			throw new RuntimeException(); // debug
 			// return false;
 		}
@@ -273,10 +273,15 @@ public class LabeledTree extends SimpleWeightedGraph<Integer, DefaultWeightedEdg
 						treeCopy.addEdge(i, j);
 						// System.out.println(treeCopy);
 						if (treeCopy.isGraceful() && GraphTests.isTree(treeCopy)) {
-							System.out.println("-> " + i + ", " + j + ": "+ treeCopy);
-							//flipTrees.add((LabeledTree) treeCopy.clone()); // clone() is VERY important here
-							addTree(flipTrees, (LabeledTree) treeCopy.clone());// clone() is VERY important here
-							System.out.println("flipTrees :" + flipTrees);
+							//System.out.println("-> " + i + ", " + j + ": " + treeCopy);
+							// flipTrees.add((LabeledTree) treeCopy.clone()); //
+							// clone() is VERY important here
+							addTree(flipTrees, (LabeledTree) treeCopy.clone());// clone()
+																				// is
+																				// VERY
+																				// important
+																				// here
+							//System.out.println("flipTrees :" + flipTrees);
 						}
 						// remove edge 'e' for next for-loop
 						treeCopy.removeEdge(i, j);
@@ -291,37 +296,45 @@ public class LabeledTree extends SimpleWeightedGraph<Integer, DefaultWeightedEdg
 	private boolean isLeaf(int vertex) {
 		return this.degreeOf(vertex) == 1;
 	}
-	
+
 	public boolean equals(Object other) {
-		
-		if (other.getClass() != this.getClass()){
+
+		if (other.getClass() != this.getClass()) {
 			throw new RuntimeException("Debugging");
-			//return false;
-		}
-		else {
+			// return false;
+		} else {
 			LabeledTree lt = (LabeledTree) other;
-			for (Integer v: this.vertexSet())
+			for (Integer v : this.vertexSet())
 				if (!lt.vertexSet().contains(v))
 					return false;
-			for (Integer v: lt.vertexSet())
+			for (Integer v : lt.vertexSet())
 				if (!this.vertexSet().contains(v))
 					return false;
-			for (DefaultWeightedEdge e: this.edgeSet()) {
+			for (DefaultWeightedEdge e : this.edgeSet()) {
 				int u = this.getEdgeSource(e);
 				int v = this.getEdgeTarget(e);
-				if (!lt.containsEdge(u,v))
+				if (!lt.containsEdge(u, v))
 					return false;
 			}
-			for (DefaultWeightedEdge e: lt.edgeSet()) {
+			for (DefaultWeightedEdge e : lt.edgeSet()) {
 				int u = lt.getEdgeSource(e);
 				int v = lt.getEdgeTarget(e);
-				if (!this.containsEdge(u,v))
+				if (!this.containsEdge(u, v))
 					return false;
 			}
 		}
 		return true;
 	}
-	
+
+	public boolean isContainedIn(Set<LabeledTree> set) {
+		Iterator<LabeledTree> iterator = set.iterator();
+		while (iterator.hasNext()) {
+			if (this.equals(iterator.next()))
+				return true;
+		}
+		return false;
+	}
+
 	public static boolean addTree(Set<LabeledTree> set, LabeledTree lt) {
 		Iterator<LabeledTree> iterator = set.iterator();
 		while (iterator.hasNext()) {
@@ -331,9 +344,9 @@ public class LabeledTree extends SimpleWeightedGraph<Integer, DefaultWeightedEdg
 		set.add(lt);
 		return true;
 	}
-	
+
 	public static boolean removeTree(Set<LabeledTree> set, LabeledTree lt) {
-		for (LabeledTree iterator: set) {
+		for (LabeledTree iterator : set) {
 			if (iterator.equals(lt)) {
 				set.remove(iterator);
 				return true;
