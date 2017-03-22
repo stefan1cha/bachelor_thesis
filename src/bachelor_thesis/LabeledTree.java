@@ -13,24 +13,32 @@ import org.jgrapht.GraphTests;
 public class LabeledTree extends SimpleWeightedGraph<Integer, DefaultWeightedEdge> {
 
 	/**
-	 * 
+	 * Stores the prufer code (if it has been already given or computed before).
 	 */
 	PruferCode pfCode = null;
 
 	/**
 	 * Stores last edge that has been added. This variable eases the
-	 * implementation of {@link #addEdge(Object, Object, int) addEdge}.
+	 * implementation of {@link #addEdge(Object, Object, int) addEdge}. It may
+	 * be removed in the future if possible.
 	 */
 	private DefaultWeightedEdge lastEdge;
 
+	/**
+	 * Constructs a (possibly) labeled tree out of a prufer code. Note (22nd of
+	 * March): the 'labeled' boolean variable can be ignored for the moment as
+	 * it is not relevant. It might come in handy later.
+	 * 
+	 * @param pfc
+	 *            The prufer code that represents the tree to be constructed.
+	 * @param labeled
+	 *            If set to true, the edges will be labeled.
+	 */
 	public LabeledTree(PruferCode pfc, boolean labeled) {
-		
-		// TODO for lazy evaluation do this: this.pfCode = pfc.
-		// But this will be deferred because the getPruferCode() method needs to
-		// be thoroughly tested.
 
 		super(DefaultWeightedEdge.class);
 
+		this.pfCode = pfc;
 		int n = pfc.getLength() + 2; // number of vertices
 		int[] appears = new int[n + 1]; // appears[i] = k means that label i
 										// appears k times in the pfc
@@ -43,10 +51,6 @@ public class LabeledTree extends SimpleWeightedGraph<Integer, DefaultWeightedEdg
 		while (iterator.hasNext()) {
 			appears[iterator.next()]++;
 		}
-
-		// System.out.println("appears: " + Arrays.toString(appears));
-		// System.out.println("sequence: " + sequence + "\n\n");
-
 		int u;
 		int v;
 		for (int i = 0; i < n - 2; i++) {
@@ -66,10 +70,7 @@ public class LabeledTree extends SimpleWeightedGraph<Integer, DefaultWeightedEdg
 					break;
 				}
 			}
-			// System.out.println(i + " appears: " + Arrays.toString(appears));
-			// System.out.println(i + " sequence: " + sequence);
-			// System.out.println(i + " taken:" + Arrays.toString(taken) +
-			// "\n\n");
+
 			this.addEdgeAndVertices(u, v);
 		}
 
@@ -92,11 +93,8 @@ public class LabeledTree extends SimpleWeightedGraph<Integer, DefaultWeightedEdg
 	}
 
 	/**
-	 * 
+	 * A basic constructor.
 	 */
-	// Precondition: tree is labeled
-	// TODO public (a collection of tree) getFlips(edge e)
-
 	public LabeledTree() {
 		super(DefaultWeightedEdge.class);
 		// TODO Auto-generated constructor stub
@@ -111,7 +109,6 @@ public class LabeledTree extends SimpleWeightedGraph<Integer, DefaultWeightedEdg
 	 *            the second vertex
 	 * @param weight
 	 *            the label of the edge to be added
-	 * @return void etc ?
 	 */
 	public void addEdge(int v1, int v2, int label) {
 		lastEdge = this.addEdge(v1, v2);
@@ -119,7 +116,8 @@ public class LabeledTree extends SimpleWeightedGraph<Integer, DefaultWeightedEdg
 	}
 
 	/**
-	 * Adds the edge and ,if necessary, it adds the missing vertices before
+	 * Adds the edge and ,if necessary, it adds the missing vertices (before
+	 * adding the edge)
 	 */
 	public void addEdgeAndVertices(int v1, int v2) {
 		if (!this.containsVertex(v1))
@@ -131,7 +129,8 @@ public class LabeledTree extends SimpleWeightedGraph<Integer, DefaultWeightedEdg
 	}
 
 	/**
-	 * 
+	 * Labels the edges of the graph with the absolute difference of the labels
+	 * of their end-vertices.
 	 */
 	public void labelEdges() {
 		for (DefaultWeightedEdge e : this.edgeSet()) {
@@ -143,13 +142,14 @@ public class LabeledTree extends SimpleWeightedGraph<Integer, DefaultWeightedEdg
 	}
 
 	/**
+	 * Tests wether the graph is graceful or not.
 	 * 
+	 * @return Return 'true' if the graph is graceful.
 	 */
 	public boolean isGraceful() {
 		int[] vertexLabels = new int[this.edgeSet().size() + 1];
 		Set<Integer> vertices = this.vertexSet();
 		if (this.vertexSet().size() != this.edgeSet().size() + 1) {
-			//System.out.println(this.vertexSet().size() + " , " + this.edgeSet().size());
 			throw new RuntimeException(); // debug
 			// return false;
 		}
@@ -158,7 +158,6 @@ public class LabeledTree extends SimpleWeightedGraph<Integer, DefaultWeightedEdg
 		}
 		for (int i = 0; i < vertexLabels.length; i++) {
 			if (vertexLabels[i] != 1) {
-				System.out.println("nope"); // debug
 				return false;
 			}
 		}
@@ -179,20 +178,22 @@ public class LabeledTree extends SimpleWeightedGraph<Integer, DefaultWeightedEdg
 	}
 
 	/**
-	 * method description
+	 * Returns the weight og edge {u,v}
 	 * 
 	 * @param v1
 	 *            the first vertex
 	 * @param v2
 	 *            the second vertex
-	 * @return ? etc ?
+	 * @return Weight of the edge {u,v}
 	 */
 	public int getEdgeWeight(int v1, int v2) {
 		return (int) this.getEdgeWeight(this.getEdge(v1, v2));
 	}
 
 	/**
+	 * Returns the prufer code.
 	 * 
+	 * @return the prufer code
 	 */
 	public PruferCode getPruferCode() {
 		if (this.pfCode != null)
@@ -208,8 +209,6 @@ public class LabeledTree extends SimpleWeightedGraph<Integer, DefaultWeightedEdg
 		LabeledTree treeCopy = (LabeledTree) this.clone();
 
 		for (int i = 0; i < n - 2; ++i) {
-			// System.out.println(treeCopy);
-			// does the for-each loop preserve order?
 			for (Integer iterator : vertexList) {
 				if (treeCopy.isLeaf(iterator)) {
 					result[i] = treeCopy.getFirstNeighborLabel(iterator);
@@ -218,15 +217,20 @@ public class LabeledTree extends SimpleWeightedGraph<Integer, DefaultWeightedEdg
 				}
 			}
 		}
-		// System.out.println(treeCopy);
-		return new PruferCode(result);
+		this.pfCode = new PruferCode(result);
+		return this.pfCode;
+		// return new PruferCode(result);
 	}
 
 	/**
-	 * Method description
+	 * Returns the label of the first neighbor. By 'first neighbor' it is simply
+	 * meant the first neighbor that is seen by the algorithm. This method is
+	 * used for computing the prufer code of the labeled tree. When removing a
+	 * leaf, its (sole) neighbor's label needs to be known.
 	 * 
-	 * @param v
-	 * @return
+	 * @param The
+	 *            node for which to get the neighbor's label
+	 * @return The neighbors label.
 	 */
 	private int getFirstNeighborLabel(int v) {
 		Set<DefaultWeightedEdge> edges = this.edgesOf(v);
@@ -243,13 +247,13 @@ public class LabeledTree extends SimpleWeightedGraph<Integer, DefaultWeightedEdg
 	}
 
 	/**
+	 * Returns the set of flip trees of the tree upon which this method is
+	 * called upon. A tree t1 is a flip tree of tree t0 if t1 can be obtained by
+	 * flipping an edge in t0.
 	 * 
-	 * @param
-	 * @return
+	 * @return The set of flip trees.
 	 */
 	public Set<LabeledTree> getFlipTrees() {
-		// TODO implement method
-
 		Set<LabeledTree> flipTrees = new HashSet<LabeledTree>();
 		for (DefaultWeightedEdge e : this.edgeSet()) {
 			// create copy of tree
@@ -258,7 +262,9 @@ public class LabeledTree extends SimpleWeightedGraph<Integer, DefaultWeightedEdg
 			// choose the vertex sets such that we avoid attaching the edge back
 			// to its original place
 			Set<Integer> vertexSet1 = this.vertexSet();
-			// why does this yield an error:
+			// why does this yield an error?
+			// Probably because the equals() method has not been properly
+			// overidden.
 			// vertexSet1.remove(this.getEdgeSource(e));
 			Set<Integer> vertexSet2 = this.vertexSet();
 			// why does this yield an error:
@@ -271,17 +277,13 @@ public class LabeledTree extends SimpleWeightedGraph<Integer, DefaultWeightedEdg
 				for (Integer j : vertexSet2) {
 					if (i != j && !treeCopy.containsEdge(i, j)) {
 						treeCopy.addEdge(i, j);
-						// System.out.println(treeCopy);
 						if (treeCopy.isGraceful() && GraphTests.isTree(treeCopy)) {
-							//System.out.println("-> " + i + ", " + j + ": " + treeCopy);
-							// flipTrees.add((LabeledTree) treeCopy.clone()); //
-							// clone() is VERY important here
+
 							addTree(flipTrees, (LabeledTree) treeCopy.clone());// clone()
 																				// is
 																				// VERY
 																				// important
 																				// here
-							//System.out.println("flipTrees :" + flipTrees);
 						}
 						// remove edge 'e' for next for-loop
 						treeCopy.removeEdge(i, j);
@@ -296,7 +298,18 @@ public class LabeledTree extends SimpleWeightedGraph<Integer, DefaultWeightedEdg
 	private boolean isLeaf(int vertex) {
 		return this.degreeOf(vertex) == 1;
 	}
-	
+
+	/**
+	 * Two graphs are equal if they have equal vertex set and equal edge set
+	 * PROBLEM: It seems that this method does not override the equals() method
+	 * from the Object class. Overriding that method is not a 'must' since I
+	 * managed to work my way around this problem, but it will make
+	 * implementation of LabeledTree and FlipGraph very clear (and more elegant
+	 * than it currently is).
+	 * 
+	 * @return Returns true if 'this' and 'other' are equal graphs AND are of
+	 *         the same type.
+	 */
 	public boolean equals(Object other) {
 
 		if (other.getClass() != this.getClass()) {
@@ -326,6 +339,13 @@ public class LabeledTree extends SimpleWeightedGraph<Integer, DefaultWeightedEdg
 		return true;
 	}
 
+	/**
+	 * Return true if 'this' is contained in the set 'set'
+	 * 
+	 * @param set
+	 *            The set that is queried.
+	 * @return Return true if it is in the set.
+	 */
 	public boolean isContainedIn(Set<LabeledTree> set) {
 		Iterator<LabeledTree> iterator = set.iterator();
 		while (iterator.hasNext()) {
@@ -335,7 +355,7 @@ public class LabeledTree extends SimpleWeightedGraph<Integer, DefaultWeightedEdg
 		return false;
 	}
 
-	public static boolean addTree(Set<LabeledTree> set, LabeledTree lt) {
+	private static boolean addTree(Set<LabeledTree> set, LabeledTree lt) {
 		Iterator<LabeledTree> iterator = set.iterator();
 		while (iterator.hasNext()) {
 			if (lt.equals(iterator.next()))
@@ -345,7 +365,7 @@ public class LabeledTree extends SimpleWeightedGraph<Integer, DefaultWeightedEdg
 		return true;
 	}
 
-	public static boolean removeTree(Set<LabeledTree> set, LabeledTree lt) {
+	private static boolean removeTree(Set<LabeledTree> set, LabeledTree lt) {
 		for (LabeledTree iterator : set) {
 			if (iterator.equals(lt)) {
 				set.remove(iterator);

@@ -12,6 +12,13 @@ public class FlipGraph extends SimpleGraph<LabeledTree, DefaultEdge> {
 
 	int n = -1;
 
+	/**
+	 * Construct a flip graph starting with a given labeled tree. The flip graph
+	 * is constructed recursively (depth first search heuristic)
+	 * 
+	 * @param lt
+	 *            From which tree the construction of the flip graph starts.
+	 */
 	public FlipGraph(LabeledTree lt) {
 		super(DefaultEdge.class);
 		if (!lt.isGraceful())
@@ -19,6 +26,13 @@ public class FlipGraph extends SimpleGraph<LabeledTree, DefaultEdge> {
 		this.createFlipGraph(lt);
 	}
 
+	/**
+	 * Construct the flip graph for the trees with 'n' vertices. The
+	 * construction start from a (gracefully labeled) path.
+	 * 
+	 * @param n
+	 *            The number of vertices of the trees.
+	 */
 	public FlipGraph(int n) {
 		super(DefaultEdge.class);
 		if (n < 0)
@@ -26,10 +40,10 @@ public class FlipGraph extends SimpleGraph<LabeledTree, DefaultEdge> {
 		LabeledTree lt = new LabeledTree();
 		int min = 0;
 		int max = n;
-		
+
 		lt.addVertex(0);
-		for (int i = 1; i<n; i++) {
-			if (i % 2 == 0){
+		for (int i = 1; i < n; i++) {
+			if (i % 2 == 0) {
 				min++;
 				lt.addVertex(min);
 				lt.addEdge(min, max);
@@ -39,29 +53,41 @@ public class FlipGraph extends SimpleGraph<LabeledTree, DefaultEdge> {
 				lt.addEdge(min, max);
 			}
 		}
-		
+
 		this.createFlipGraph(lt);
-		
+
 	}
 
+	/**
+	 * Construct a flip graph starting from LabeledTree 'lt'. The constructor
+	 * cannot replace this method, since it recursive. In Java, constructors
+	 * cannot be recursive.
+	 * 
+	 * @param lt
+	 */
 	private void createFlipGraph(LabeledTree lt) {
 		this.addFlipNode(lt);
 		Set<LabeledTree> neighbors = lt.getFlipTrees();
 		this.addFlipNodeSet(neighbors);
+
 		Iterator<LabeledTree> iterator = neighbors.iterator();
 		while (iterator.hasNext()) {
 			LabeledTree current = iterator.next();
 			if (!this.equals(current) && !this.containsFlipEdge(lt, current)) {
 				this.addFlipNode(current);
-				System.out.println("\n\n->" + lt);
-				System.out.println("->" + current);
-				System.out.println(this.containsVertex(current));
 				this.addFlipEdgeAux(lt, current);
 				this.createFlipGraph(current);
 			}
 		}
 	}
-	
+
+	/**
+	 * This method is a work-around the problem concerning the equals() method
+	 * (see LabeledTree.java)
+	 * 
+	 * @param lt1
+	 * @param lt2
+	 */
 	private void addFlipEdgeAux(LabeledTree lt1, LabeledTree lt2) {
 		Iterator<LabeledTree> iterator = this.vertexSet().iterator();
 		while (iterator.hasNext()) {
@@ -74,11 +100,25 @@ public class FlipGraph extends SimpleGraph<LabeledTree, DefaultEdge> {
 		this.addEdge(lt1, lt2);
 	}
 
+	/**
+	 * A work-around to the equals() method problem (see LabeledTree.java)
+	 * @param e
+	 * @param lt1
+	 * @param lt2
+	 * @return
+	 */
 	public void addFlipNode(LabeledTree lt) {
 		if (!lt.isContainedIn(this.vertexSet()))
 			this.addVertex(lt);
 	}
-	
+
+	/**
+	 * Another work-around to the equals() method problem (see LabeledTree.java)
+	 * @param e
+	 * @param lt1
+	 * @param lt2
+	 * @return
+	 */
 	public boolean containsFlipEdge(LabeledTree lt1, LabeledTree lt2) {
 		Iterator<DefaultEdge> iterator = this.edgeSet().iterator();
 		while (iterator.hasNext()) {
@@ -88,11 +128,22 @@ public class FlipGraph extends SimpleGraph<LabeledTree, DefaultEdge> {
 		return false;
 	}
 
+	/**
+	 * Another work-around to the equals() method problem (see LabeledTree.java)
+	 * @param e
+	 * @param lt1
+	 * @param lt2
+	 * @return
+	 */
 	public boolean edgeCorrepondsToVertices(DefaultEdge e, LabeledTree lt1, LabeledTree lt2) {
 		return (lt1.equals(this.getEdgeSource(e)) && lt2.equals(this.getEdgeTarget(e)))
 				|| (lt1.equals(this.getEdgeTarget(e)) && lt2.equals(this.getEdgeSource(e)));
 	}
 
+	/**
+	 * Add all labeled trees that are in a given set to the flip graph
+	 * @param vertexSet The set containing the trees to be added.
+	 */
 	public void addFlipNodeSet(Set<LabeledTree> vertexSet) {
 		Iterator<LabeledTree> iterator = vertexSet.iterator();
 		while (iterator.hasNext()) {
@@ -105,7 +156,6 @@ public class FlipGraph extends SimpleGraph<LabeledTree, DefaultEdge> {
 		String result = "Vertices:\n";
 		LabeledTree[] flipNodes = this.vertexSet().toArray(new LabeledTree[0]);
 		for (int i = 0; i < flipNodes.length; i++) {
-			// System.out.println("lt" + i + ": " + flipNodes[i]);
 			result += "lt" + i + ": " + flipNodes[i] + "\n";
 		}
 
@@ -115,8 +165,7 @@ public class FlipGraph extends SimpleGraph<LabeledTree, DefaultEdge> {
 		while (iterator.hasNext()) {
 			result += this.getEdgeIndicesFromArray(iterator.next(), flipNodes) + ", ";
 		}
-
-		return result;
+		return result.substring(0, result.length() - 2);
 	}
 
 	private Pair<Integer, Integer> getEdgeIndicesFromArray(DefaultEdge e, LabeledTree[] ltArray) {
@@ -133,9 +182,9 @@ public class FlipGraph extends SimpleGraph<LabeledTree, DefaultEdge> {
 		return new Pair<Integer, Integer>(a, b);
 	}
 
-	
 	/**
-	 * 
+	 * This variable can be ignored. It is here just to get rid of some compiler
+	 * warning.
 	 */
 	private static final long serialVersionUID = -3090899308347100128L;
 

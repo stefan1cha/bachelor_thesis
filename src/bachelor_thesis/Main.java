@@ -3,14 +3,16 @@ package bachelor_thesis;
 import org.jgrapht.Graph;
 import org.jgrapht.graph.DefaultEdge;
 
-import java.util.Arrays;
-import java.util.HashSet;
+//import java.util.Arrays;
+//import java.util.HashSet;
 import java.util.Set;
 
 public class Main {
 
 	public static void main(String[] args) {
-
+		
+		/*
+		
 		// Test 1
 		LabeledTree lt = new LabeledTree();
 
@@ -119,21 +121,38 @@ public class Main {
 		lt10.addVertex(0);
 		System.out.println(lt10.vertexSet().size());
 
+		
+		*/
+		
+		
+		
 		// Test 11
-		FlipGraph flippity = new FlipGraph(new LabeledTree(new PruferCode(new int[] { 0 }), true));
-		System.out.println("\n\n\n" + flippity);
+		//FlipGraph flippity = new FlipGraph(new LabeledTree(new PruferCode(new int[] { 0 }), true));
+		//System.out.println("\n\n\n" + flippity);
 
 		// Test 12
-		FlipGraph flippityFlip = new FlipGraph(new LabeledTree(new PruferCode(new int[] { 0, 0 }), true));
-		System.out.println(flippityFlip);
-		
+		//FlipGraph flippityFlip = new FlipGraph(new LabeledTree(new PruferCode(new int[] { 0, 0 }), true));
+		//System.out.println(flippityFlip);
+
 		// Test 13
-		FlipGraph flippityFlop = new FlipGraph(4);
-		System.out.println(flippityFlop);
-		
+		//FlipGraph flippityFlop = new FlipGraph(4);
+		//System.out.println(flippityFlop);
+
 		// Test 14
 		FlipGraph flippityFlap = new FlipGraph(5);
 		System.out.println(flippityFlap);
+
+		// Test 15
+		// FlipGraph flippityFlep = new FlipGraph(6);
+		// System.out.println(flippityFlep);
+
+		// Test 15
+		// FlipGraph flippityFlup = new FlipGraph(7);
+		// System.out.println(flippityFlup);
+
+		// Test 16
+		// LabeledTree lt16 = new LabeledTree(new PruferCode(new int[] { 4, 3, 1 }), true);
+		// System.out.println("\n\nTest 16:\n" + lt16.getFlipTrees());
 
 	}
 
