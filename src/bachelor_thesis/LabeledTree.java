@@ -199,8 +199,8 @@ public class LabeledTree extends SimpleWeightedGraph<Integer, DefaultWeightedEdg
 		// TODO set Prufer code to NULL if an edge or vertex has been added (try
 		// overriding the methods addVertex(), addEdge() and reimplement the
 		// others)
-		if (this.pfCode != null)
-			return this.pfCode;
+		//if (this.pfCode != null)
+			//return this.pfCode;
 		ArrayList<Integer> vertexList = new ArrayList<Integer>(this.vertexSet());
 		Collections.sort(vertexList);
 		int n = vertexList.size();
@@ -439,6 +439,8 @@ public class LabeledTree extends SimpleWeightedGraph<Integer, DefaultWeightedEdg
 		return false;
 
 	}
+	
+	
 
 	/**
 	 * This 'serialVersionUID' variable is here just to avoid a warning.
