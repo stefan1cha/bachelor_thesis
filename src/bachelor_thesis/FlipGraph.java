@@ -2,11 +2,16 @@ package bachelor_thesis;
 
 import org.jgrapht.graph.SimpleGraph;
 
-import java.util.Iterator;
+import java.util.ArrayList;
 import java.util.Set;
+import java.util.Iterator;
+import java.util.List;
 
-import org.antlr.v4.runtime.misc.Pair;
+import org.jgrapht.GraphPath;
+import org.jgrapht.alg.shortestpath.FloydWarshallShortestPaths;
 import org.jgrapht.graph.DefaultEdge;
+import org.jgrapht.graph.DefaultWeightedEdge;
+import org.antlr.v4.runtime.misc.Pair;
 
 public class FlipGraph extends SimpleGraph<LabeledTree, DefaultEdge> {
 
@@ -102,6 +107,7 @@ public class FlipGraph extends SimpleGraph<LabeledTree, DefaultEdge> {
 
 	/**
 	 * A work-around to the equals() method problem (see LabeledTree.java)
+	 * 
 	 * @param e
 	 * @param lt1
 	 * @param lt2
@@ -114,6 +120,7 @@ public class FlipGraph extends SimpleGraph<LabeledTree, DefaultEdge> {
 
 	/**
 	 * Another work-around to the equals() method problem (see LabeledTree.java)
+	 * 
 	 * @param e
 	 * @param lt1
 	 * @param lt2
@@ -130,6 +137,7 @@ public class FlipGraph extends SimpleGraph<LabeledTree, DefaultEdge> {
 
 	/**
 	 * Another work-around to the equals() method problem (see LabeledTree.java)
+	 * 
 	 * @param e
 	 * @param lt1
 	 * @param lt2
@@ -142,7 +150,9 @@ public class FlipGraph extends SimpleGraph<LabeledTree, DefaultEdge> {
 
 	/**
 	 * Add all labeled trees that are in a given set to the flip graph
-	 * @param vertexSet The set containing the trees to be added.
+	 * 
+	 * @param vertexSet
+	 *            The set containing the trees to be added.
 	 */
 	public void addFlipNodeSet(Set<LabeledTree> vertexSet) {
 		Iterator<LabeledTree> iterator = vertexSet.iterator();
@@ -180,6 +190,24 @@ public class FlipGraph extends SimpleGraph<LabeledTree, DefaultEdge> {
 			}
 		}
 		return new Pair<Integer, Integer>(a, b);
+	}
+
+	public ArrayList<Pair<DefaultWeightedEdge,DefaultWeightedEdge>> getFlipSequence(LabeledTree source, LabeledTree sink) {
+		ArrayList<Pair<DefaultWeightedEdge,DefaultWeightedEdge>> res = new ArrayList<>();
+		if (!this.containsVertex(source) || !this.containsVertex(sink))
+			return null;
+		FloydWarshallShortestPaths<LabeledTree, DefaultEdge> fwsp = new FloydWarshallShortestPaths<>(this);
+		GraphPath<LabeledTree, DefaultEdge> walk = fwsp.getPath(source, sink);
+		List<LabeledTree> treeSeq = walk.getVertexList();
+		Iterator<LabeledTree> iterator = treeSeq.iterator();
+		LabeledTree prev = iterator.next();
+		LabeledTree current;
+		while (iterator.hasNext()){
+			current = iterator.next();
+			res.add(prev.getEdgeFlip(current));
+			prev = current;
+		}
+		return res;
 	}
 
 	/**

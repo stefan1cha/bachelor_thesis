@@ -3,19 +3,20 @@ package bachelor_thesis;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.Set;
 import java.util.Iterator;
+import java.util.Set;
 
+import org.antlr.v4.runtime.misc.Pair;
+import org.jgrapht.GraphTests;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.SimpleWeightedGraph;
-import org.jgrapht.GraphTests;
 
 public class LabeledTree extends SimpleWeightedGraph<Integer, DefaultWeightedEdge> {
 
 	/**
 	 * Stores the prufer code (if it has been already given or computed before).
 	 */
-	PruferCode pfCode = null;
+	private PruferCode pfCode = null;
 
 	/**
 	 * Stores last edge that has been added. This variable eases the
@@ -97,7 +98,6 @@ public class LabeledTree extends SimpleWeightedGraph<Integer, DefaultWeightedEdg
 	 */
 	public LabeledTree() {
 		super(DefaultWeightedEdge.class);
-		// TODO Auto-generated constructor stub
 	}
 
 	/**
@@ -119,7 +119,7 @@ public class LabeledTree extends SimpleWeightedGraph<Integer, DefaultWeightedEdg
 	 * Adds the edge and ,if necessary, it adds the missing vertices (before
 	 * adding the edge)
 	 */
-	public void addEdgeAndVertices(int v1, int v2) {
+	private void addEdgeAndVertices(int v1, int v2) {
 		if (!this.containsVertex(v1))
 			this.addVertex(v1);
 		if (!this.containsVertex(v2))
@@ -132,7 +132,7 @@ public class LabeledTree extends SimpleWeightedGraph<Integer, DefaultWeightedEdg
 	 * Labels the edges of the graph with the absolute difference of the labels
 	 * of their end-vertices.
 	 */
-	public void labelEdges() {
+	private void labelEdges() {
 		for (DefaultWeightedEdge e : this.edgeSet()) {
 			int v = this.getEdgeSource(e);
 			int u = this.getEdgeTarget(e);
@@ -196,6 +196,9 @@ public class LabeledTree extends SimpleWeightedGraph<Integer, DefaultWeightedEdg
 	 * @return the prufer code
 	 */
 	public PruferCode getPruferCode() {
+		// TODO set Prufer code to NULL if an edge or vertex has been added (try
+		// overriding the methods addVertex(), addEdge() and reimplement the
+		// others)
 		if (this.pfCode != null)
 			return this.pfCode;
 		ArrayList<Integer> vertexList = new ArrayList<Integer>(this.vertexSet());
@@ -311,32 +314,50 @@ public class LabeledTree extends SimpleWeightedGraph<Integer, DefaultWeightedEdg
 	 *         the same type.
 	 */
 	public boolean equals(Object other) {
-
 		if (other.getClass() != this.getClass()) {
 			throw new RuntimeException("Debugging");
 			// return false;
 		} else {
 			LabeledTree lt = (LabeledTree) other;
 			for (Integer v : this.vertexSet())
-				if (!lt.vertexSet().contains(v))
+				if (!lt.vertexSet().contains(v)) {
+					// System.out.println("\n\n" + this + "\n" + other +
+					// "\nfalse");
 					return false;
+				}
 			for (Integer v : lt.vertexSet())
-				if (!this.vertexSet().contains(v))
+				if (!this.vertexSet().contains(v)) {
+					// System.out.println("\n\n" + this + "\n" + other +
+					// "\nfalse");
 					return false;
+				}
 			for (DefaultWeightedEdge e : this.edgeSet()) {
 				int u = this.getEdgeSource(e);
 				int v = this.getEdgeTarget(e);
-				if (!lt.containsEdge(u, v))
+				if (!lt.containsEdge(u, v)) {
+					// System.out.println("\n\n" + this + "\n" + other +
+					// "\nfalse");
+
 					return false;
+				}
 			}
 			for (DefaultWeightedEdge e : lt.edgeSet()) {
 				int u = lt.getEdgeSource(e);
 				int v = lt.getEdgeTarget(e);
-				if (!this.containsEdge(u, v))
+				if (!this.containsEdge(u, v)) {
+					// System.out.println("\n\n" + this + "\n" + other +
+					// "\nfalse");
 					return false;
+				}
 			}
 		}
+		// System.out.println("\n\n" + this + "\n" + other + "\ntrue");
 		return true;
+	}
+
+	public int hashCode() {
+		// System.out.println(this + "hashCode");
+		return 1;
 	}
 
 	/**
@@ -373,6 +394,53 @@ public class LabeledTree extends SimpleWeightedGraph<Integer, DefaultWeightedEdg
 			}
 		}
 		return false;
+	}
+
+	public Pair<DefaultWeightedEdge, DefaultWeightedEdge> getEdgeFlip(LabeledTree lt) {
+		Set<DefaultWeightedEdge> set1 = new HashSet<DefaultWeightedEdge>(this.edgeSet());
+		Set<DefaultWeightedEdge> set2 = new HashSet<DefaultWeightedEdge>(lt.edgeSet());
+		DefaultWeightedEdge e1 = null;
+		DefaultWeightedEdge e2 = null;
+
+		Iterator<DefaultWeightedEdge> iterator = set1.iterator();
+		while (iterator.hasNext()) {
+			e1 = iterator.next();
+			//System.out.println(e1 + " and " + set2);
+			if (!this.edgeIsContainedIn(e1, set2))
+				break;
+		}
+
+		iterator = set2.iterator();
+		while (iterator.hasNext()) {
+			e2 = iterator.next();
+			if (!this.edgeIsContainedIn(e2, set1))
+				break;
+		}
+
+		//System.out.println("e1: " + e1);
+		//System.out.println("e2: " + e2);
+
+		Pair<DefaultWeightedEdge, DefaultWeightedEdge> result = new Pair<DefaultWeightedEdge, DefaultWeightedEdge>(e1,
+				e2);
+
+		return result;
+	}
+
+	private boolean edgeIsContainedIn(DefaultWeightedEdge e, Set<DefaultWeightedEdge> set) {
+		Iterator<DefaultWeightedEdge> iterator = set.iterator();
+		int v1 = this.getEdgeSource(e);
+		int v2 = this.getEdgeTarget(e);
+		while (iterator.hasNext()) {
+			DefaultWeightedEdge eCurr = iterator.next();
+			int u1 = this.getEdgeSource(eCurr);
+			int u2 = this.getEdgeTarget(eCurr);
+			//System.out.println(" -> " +);
+			if ((v1 == u1 && v2 == u2) || (v1 == u2 && v2 == u1))
+				return true;
+		}
+
+		return false;
+
 	}
 
 	/**
