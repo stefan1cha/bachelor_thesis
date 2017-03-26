@@ -3,9 +3,12 @@ package bachelor_thesis;
 import org.jgrapht.graph.SimpleGraph;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Set;
+import java.util.Stack;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Scanner;
 
 import org.jgrapht.GraphPath;
 import org.jgrapht.alg.shortestpath.FloydWarshallShortestPaths;
@@ -15,7 +18,11 @@ import org.antlr.v4.runtime.misc.Pair;
 
 public class FlipGraph extends SimpleGraph<LabeledTree, DefaultEdge> {
 
-	int n = -1;
+	//private int n = -1;
+	
+	public FlipGraph() {
+		super(DefaultEdge.class);
+	}
 
 	/**
 	 * Construct a flip graph starting with a given labeled tree. The flip graph
@@ -59,8 +66,7 @@ public class FlipGraph extends SimpleGraph<LabeledTree, DefaultEdge> {
 			}
 		}
 
-		this.createFlipGraph(lt);
-
+		this.createFlipGraphRec(lt);
 	}
 
 	/**
@@ -70,7 +76,7 @@ public class FlipGraph extends SimpleGraph<LabeledTree, DefaultEdge> {
 	 * 
 	 * @param lt
 	 */
-	private void createFlipGraph(LabeledTree lt) {
+	public void createFlipGraphRec(LabeledTree lt) {
 		this.addVertex(lt);
 		Set<LabeledTree> neighbors = lt.getFlipTrees();
 		this.addVertexSet(neighbors);
@@ -81,7 +87,44 @@ public class FlipGraph extends SimpleGraph<LabeledTree, DefaultEdge> {
 			if (!this.equals(current) && !this.containsFlipEdge(lt, current)) {
 				this.addVertex(current);
 				this.addFlipEdgeAux(lt, current);
-				this.createFlipGraph(current);
+				this.createFlipGraphRec(current);
+			}
+		}
+	}
+
+	public void createFlipGraph(LabeledTree lt) {
+		HashSet<PruferCode> visited = new HashSet<PruferCode>();
+		LabeledTree explorer;
+		Stack<PruferCode> stack = new Stack<PruferCode>();
+		stack.push(lt.getPruferCode());
+
+		while (!stack.isEmpty()) {
+			explorer = new LabeledTree(stack.pop(),true);
+			visited.add(explorer.getPruferCode());
+			this.addVertex(explorer);
+			Set<LabeledTree> neighbors = explorer.getFlipTrees();
+
+			
+			for (LabeledTree iterator : neighbors)
+				if (!visited.contains(iterator.getPruferCode()))
+					stack.push(iterator.getPruferCode());
+			
+			//System.out.println("\n\n\nstack: " + stack + "\nexplorer: " + explorer + "\nvisited: " + visited);
+
+			// add neighbors to graph
+			Iterator<LabeledTree> iterator = neighbors.iterator();
+			while (iterator.hasNext()) {
+				
+				//Scanner reader = new Scanner(System.in);
+				//int x = reader.nextInt();
+				
+				LabeledTree current = iterator.next();
+				
+				if (!this.containsEdge(explorer, current) && !explorer.equals(current)) {
+					this.addVertex(current);
+					this.addEdge(explorer, current);
+				}
+
 			}
 		}
 	}
@@ -194,6 +237,16 @@ public class FlipGraph extends SimpleGraph<LabeledTree, DefaultEdge> {
 			prev = current;
 		}
 		return res;
+	}
+	
+	public static Set<PruferCode> treesToPruferCodes(Set<LabeledTree> trees) {
+		Iterator<LabeledTree> iterator = trees.iterator();
+		Set<PruferCode> result = new HashSet<PruferCode>();
+		while(iterator.hasNext()) {
+			result.add(iterator.next().getPruferCode());
+		}
+		return result;
+		
 	}
 
 	/**

@@ -9,6 +9,7 @@ import org.jgrapht.graph.DefaultWeightedEdge;
 import java.text.DecimalFormat;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
@@ -21,10 +22,32 @@ public class Main {
 		// DefaultWeightedEdge (probably by creating new classes)
 
 		int n = 8; // TODO
-		
-		System.out.println((new LabeledTree(new PruferCode (new int[]{0,0,0,}),true).getEdgeFlip(new LabeledTree(new PruferCode(new int[]{0,4,0}),true))));
 
-		getStats(n);
+		// FlipGraph fg = new FlipGraph(4);
+		// System.out.println(fg);
+
+		FlipGraph fgRec = new FlipGraph();
+		FlipGraph fgIter = new FlipGraph();
+
+		fgRec.createFlipGraphRec(new LabeledTree(new PruferCode(new int[] { 5, 2, 4, 1 }), true));
+		fgIter.createFlipGraph(new LabeledTree(new PruferCode(new int[] { 5, 2, 4, 1 }), true));
+
+		Set<LabeledTree> copy = new HashSet<LabeledTree>(fgRec.vertexSet());
+
+		copy.removeAll(fgIter.vertexSet());
+
+		System.out.println(FlipGraph.treesToPruferCodes(copy));
+
+		LabeledTree lt1 = new LabeledTree(new PruferCode(new int[] { 3, 5, 4, 0 }), true);
+		LabeledTree lt2 = new LabeledTree(new PruferCode(new int[] { 5, 1, 0, 0 }), true);
+
+		System.out.println(lt1);
+		System.out.println(lt2);
+		
+		System.out.println(lt1.getPruferCode());
+		System.out.println(lt2.getPruferCode());
+
+		// getStats(n);
 
 	}
 
@@ -40,7 +63,7 @@ public class Main {
 
 		int[] nodesOfDeg;
 
-		for (int i = 1; i < n; ++i) {
+		for (int i = 3; i < n; ++i) {
 			fg = new FlipGraph(i);
 			fwsp = new FloydWarshallShortestPaths<>(fg);
 			maxDeg = minDeg = 0;
