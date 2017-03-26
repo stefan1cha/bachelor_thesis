@@ -405,7 +405,6 @@ public class LabeledTree extends SimpleWeightedGraph<Integer, DefaultWeightedEdg
 		Iterator<DefaultWeightedEdge> iterator = set1.iterator();
 		while (iterator.hasNext()) {
 			e1 = iterator.next();
-			//System.out.println(e1 + " and " + set2);
 			if (!this.edgeIsContainedIn(e1, set2))
 				break;
 		}
@@ -416,9 +415,6 @@ public class LabeledTree extends SimpleWeightedGraph<Integer, DefaultWeightedEdg
 			if (!this.edgeIsContainedIn(e2, set1))
 				break;
 		}
-
-		//System.out.println("e1: " + e1);
-		//System.out.println("e2: " + e2);
 
 		Pair<DefaultWeightedEdge, DefaultWeightedEdge> result = new Pair<DefaultWeightedEdge, DefaultWeightedEdge>(e1,
 				e2);
@@ -434,7 +430,6 @@ public class LabeledTree extends SimpleWeightedGraph<Integer, DefaultWeightedEdg
 			DefaultWeightedEdge eCurr = iterator.next();
 			int u1 = this.getEdgeSource(eCurr);
 			int u2 = this.getEdgeTarget(eCurr);
-			//System.out.println(" -> " +);
 			if ((v1 == u1 && v2 == u2) || (v1 == u2 && v2 == u1))
 				return true;
 		}

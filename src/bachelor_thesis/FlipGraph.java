@@ -71,15 +71,15 @@ public class FlipGraph extends SimpleGraph<LabeledTree, DefaultEdge> {
 	 * @param lt
 	 */
 	private void createFlipGraph(LabeledTree lt) {
-		this.addFlipNode(lt);
+		this.addVertex(lt);
 		Set<LabeledTree> neighbors = lt.getFlipTrees();
-		this.addFlipNodeSet(neighbors);
+		this.addVertexSet(neighbors);
 
 		Iterator<LabeledTree> iterator = neighbors.iterator();
 		while (iterator.hasNext()) {
 			LabeledTree current = iterator.next();
 			if (!this.equals(current) && !this.containsFlipEdge(lt, current)) {
-				this.addFlipNode(current);
+				this.addVertex(current);
 				this.addFlipEdgeAux(lt, current);
 				this.createFlipGraph(current);
 			}
@@ -106,21 +106,6 @@ public class FlipGraph extends SimpleGraph<LabeledTree, DefaultEdge> {
 	}
 
 	/**
-	 * A work-around to the equals() method problem (see LabeledTree.java)
-	 * 
-	 * @param e
-	 * @param lt1
-	 * @param lt2
-	 * @return
-	 */
-	public void addFlipNode(LabeledTree lt) {
-		if (!lt.isContainedIn(this.vertexSet()))
-			this.addVertex(lt);
-	}
-
-	/**
-	 * Another work-around to the equals() method problem (see LabeledTree.java)
-	 * 
 	 * @param e
 	 * @param lt1
 	 * @param lt2
@@ -136,7 +121,7 @@ public class FlipGraph extends SimpleGraph<LabeledTree, DefaultEdge> {
 	}
 
 	/**
-	 * Another work-around to the equals() method problem (see LabeledTree.java)
+	 * A work-around to the equals() method problem
 	 * 
 	 * @param e
 	 * @param lt1
@@ -149,15 +134,15 @@ public class FlipGraph extends SimpleGraph<LabeledTree, DefaultEdge> {
 	}
 
 	/**
-	 * Add all labeled trees that are in a given set to the flip graph
+	 * Add all trees that are in a given set to the flip graph
 	 * 
 	 * @param vertexSet
 	 *            The set containing the trees to be added.
 	 */
-	public void addFlipNodeSet(Set<LabeledTree> vertexSet) {
+	public void addVertexSet(Set<LabeledTree> vertexSet) {
 		Iterator<LabeledTree> iterator = vertexSet.iterator();
 		while (iterator.hasNext()) {
-			this.addFlipNode(iterator.next()); // TODO change this method
+			this.addVertex(iterator.next()); // TODO change this method
 		}
 	}
 
@@ -192,8 +177,9 @@ public class FlipGraph extends SimpleGraph<LabeledTree, DefaultEdge> {
 		return new Pair<Integer, Integer>(a, b);
 	}
 
-	public ArrayList<Pair<DefaultWeightedEdge,DefaultWeightedEdge>> getFlipSequence(LabeledTree source, LabeledTree sink) {
-		ArrayList<Pair<DefaultWeightedEdge,DefaultWeightedEdge>> res = new ArrayList<>();
+	public ArrayList<Pair<DefaultWeightedEdge, DefaultWeightedEdge>> getFlipSequence(LabeledTree source,
+			LabeledTree sink) {
+		ArrayList<Pair<DefaultWeightedEdge, DefaultWeightedEdge>> res = new ArrayList<>();
 		if (!this.containsVertex(source) || !this.containsVertex(sink))
 			return null;
 		FloydWarshallShortestPaths<LabeledTree, DefaultEdge> fwsp = new FloydWarshallShortestPaths<>(this);
@@ -202,7 +188,7 @@ public class FlipGraph extends SimpleGraph<LabeledTree, DefaultEdge> {
 		Iterator<LabeledTree> iterator = treeSeq.iterator();
 		LabeledTree prev = iterator.next();
 		LabeledTree current;
-		while (iterator.hasNext()){
+		while (iterator.hasNext()) {
 			current = iterator.next();
 			res.add(prev.getEdgeFlip(current));
 			prev = current;
