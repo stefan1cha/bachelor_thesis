@@ -8,7 +8,6 @@ import java.util.Set;
 import java.util.Stack;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Scanner;
 
 import org.jgrapht.GraphPath;
 import org.jgrapht.alg.shortestpath.FloydWarshallShortestPaths;
@@ -66,7 +65,7 @@ public class FlipGraph extends SimpleGraph<LabeledTree, DefaultEdge> {
 			}
 		}
 
-		this.createFlipGraphRec(lt);
+		this.createFlipGraph(lt);
 	}
 
 	/**
@@ -93,49 +92,30 @@ public class FlipGraph extends SimpleGraph<LabeledTree, DefaultEdge> {
 	}
 
 	public void createFlipGraph(LabeledTree lt) {
-		// visited nodes
-		HashSet<PruferCode> visited = new HashSet<PruferCode>();
-		// nodes that need to be visited
-		Stack<PruferCode> stack = new Stack<PruferCode>();
-		
-		LabeledTree explorer;
-		
-		stack.push(lt.getPruferCode());
+		Stack<LabeledTree> stack = new Stack<LabeledTree>();
+		HashSet<LabeledTree> visited = new HashSet<LabeledTree>();
 
+		stack.push(lt);
 		while (!stack.isEmpty()) {
-			// get next unvisited flip-node
-			explorer = new LabeledTree(stack.pop(),true);
-			// now it has been visited
-			visited.add(explorer.getPruferCode()); // a bit inefficient but whatever
-			// add it to the flip graph
+			LabeledTree explorer = stack.pop();
 			this.addVertex(explorer);
-			// get its flip trees
-			Set<LabeledTree> neighbors = explorer.getFlipTrees();
-
-			// push the new trees on the stack
-			for (LabeledTree iterator : neighbors)
-				if (!visited.contains(iterator.getPruferCode()))
-					stack.push(iterator.getPruferCode());
+			visited.add(explorer);
 			
-
-			// add flip nodes and flip edges to graph
+			Set<LabeledTree> neighbors = explorer.getFlipTrees();
+			
 			Iterator<LabeledTree> iterator = neighbors.iterator();
 			while (iterator.hasNext()) {
-				
-				//Scanner reader = new Scanner(System.in);
-				//int x = reader.nextInt();
-				
 				LabeledTree current = iterator.next();
-				
-				if (!this.containsEdge(explorer, current) && !explorer.equals(current)) {
+				if (!visited.contains(current))
+					stack.push(current);
+				if (!this.containsVertex(current))
 					this.addVertex(current);
+				if (!this.containsEdge(explorer, current))
 					this.addEdge(explorer, current);
-					//if (!visited.contains(current.getPruferCode()))
-						//stack.push(current.getPruferCode());
-				}
-
 			}
+			
 		}
+		
 	}
 
 	/**

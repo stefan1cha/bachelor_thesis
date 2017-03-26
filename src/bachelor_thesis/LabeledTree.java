@@ -199,8 +199,8 @@ public class LabeledTree extends SimpleWeightedGraph<Integer, DefaultWeightedEdg
 		// TODO set Prufer code to NULL if an edge or vertex has been added (try
 		// overriding the methods addVertex(), addEdge() and reimplement the
 		// others)
-		//if (this.pfCode != null)
-		//	return this.pfCode;
+		if (this.pfCode != null)
+			return this.pfCode;
 		ArrayList<Integer> vertexList = new ArrayList<Integer>(this.vertexSet());
 		Collections.sort(vertexList);
 		int n = vertexList.size();
@@ -225,7 +225,6 @@ public class LabeledTree extends SimpleWeightedGraph<Integer, DefaultWeightedEdg
 		}
 		this.pfCode = new PruferCode(result);
 		return this.pfCode;
-		// return new PruferCode(result);
 	}
 
 	/**
@@ -359,8 +358,8 @@ public class LabeledTree extends SimpleWeightedGraph<Integer, DefaultWeightedEdg
 	}
 
 	public int hashCode() {
-		// System.out.println(this + "hashCode");
-		return 1;
+		return this.getPruferCode().hashCode();
+		
 	}
 
 	/**

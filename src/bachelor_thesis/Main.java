@@ -9,7 +9,6 @@ import org.jgrapht.graph.DefaultWeightedEdge;
 import java.text.DecimalFormat;
 import java.util.Arrays;
 import java.util.Comparator;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
@@ -21,12 +20,12 @@ public class Main {
 		// LabeledTree, FlipGraph, and solve the same issue for DefaultEdge and
 		// DefaultWeightedEdge (probably by creating new classes)
 
-		int n = 8; // TODO
+		int n = 11; // TODO
 
 		// FlipGraph fg = new FlipGraph(4);
 		// System.out.println(fg);
 
-		FlipGraph fgRec = new FlipGraph();
+		/*FlipGraph fgRec = new FlipGraph();
 		FlipGraph fgIter = new FlipGraph();
 
 		fgRec.createFlipGraphRec(new LabeledTree(new PruferCode(new int[] { 5, 2, 4, 1 }), true));
@@ -36,7 +35,7 @@ public class Main {
 
 		copy.removeAll(fgIter.vertexSet());
 
-		System.out.println(FlipGraph.treesToPruferCodes(copy));
+		System.out.println("Set difference:" + FlipGraph.treesToPruferCodes(copy));
 
 		LabeledTree lt1 = new LabeledTree(new PruferCode(new int[] { 3, 5, 4, 0 }), true);
 		LabeledTree lt2 = new LabeledTree(new PruferCode(new int[] { 5, 1, 0, 0 }), true);
@@ -46,8 +45,9 @@ public class Main {
 		
 		System.out.println(lt1.getPruferCode());
 		System.out.println(lt2.getPruferCode());
+		*/
 
-		// getStats(n);
+		getStats(n);
 
 	}
 
@@ -66,7 +66,8 @@ public class Main {
 		for (int i = 3; i < n; ++i) {
 			fg = new FlipGraph(i);
 			fwsp = new FloydWarshallShortestPaths<>(fg);
-			maxDeg = minDeg = 0;
+			maxDeg = 0;
+			minDeg = Integer.MAX_VALUE;
 			avgDeg = 0;
 
 			System.out.println("\n\n\n\n\n\n=================================================\n         n = " + i

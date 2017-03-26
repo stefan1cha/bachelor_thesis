@@ -10,6 +10,7 @@ public class PruferCode {
 	 * Stores the Prufer code
 	 */
 	private ArrayList<Integer> code;
+	private int hash = 0;
 
 	/**
 	 * Constructs a PruferCode out of an array that stores the prufer code.
@@ -22,6 +23,17 @@ public class PruferCode {
 		for (int i = 0; i < arg.length; ++i) {
 			this.code.add(arg[i]);
 		}
+		
+		/*
+		Iterator<Integer> iterator = this.code.iterator();
+		hash = 0;
+		int count = 0;
+		int ten = 10;
+		while (iterator.hasNext() && count++ < 10) {
+			hash += ten * iterator.next();
+			ten *= 10;
+		}
+		*/
 
 	}
 
@@ -33,6 +45,17 @@ public class PruferCode {
 	 */
 	public PruferCode(ArrayList<Integer> arg) {
 		this.code = arg;
+		
+		/*
+		Iterator<Integer> iterator = this.code.iterator();
+		hash = 0;
+		int count = 0;
+		int ten = 10;
+		while (iterator.hasNext() && count++ < 10) {
+			hash += ten * iterator.next();
+			ten *= 10;
+		}
+		*/
 	}
 
 	/**
@@ -55,25 +78,35 @@ public class PruferCode {
 	public boolean equals(Object obj) {
 		if (obj.getClass() != this.getClass())
 			return false;
-		
+
 		PruferCode other = (PruferCode) obj;
 
 		Iterator<Integer> iterator = this.code.iterator();
 		while (iterator.hasNext())
 			if (!other.has(iterator.next()))
 				return false;
-		
+
 		iterator = other.code.iterator();
 		while (iterator.hasNext())
 			if (!this.has(iterator.next()))
 				return false;
-		
+
 		return true;
 	}
 
 	@Override
 	public int hashCode() {
-		// TODO return prufer code as integer
+		/*Iterator<Integer> iterator = this.code.iterator();
+		hash = 0;
+		int count = 0;
+		int ten = 10;
+		while (iterator.hasNext() && count++ < 10) {
+			hash += ten * iterator.next();
+			ten *= 10;
+		}
+		System.out.println(hash);
+		return this.hash;
+		*/
 		return 1;
 	}
 
