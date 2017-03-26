@@ -93,25 +93,32 @@ public class FlipGraph extends SimpleGraph<LabeledTree, DefaultEdge> {
 	}
 
 	public void createFlipGraph(LabeledTree lt) {
+		// visited nodes
 		HashSet<PruferCode> visited = new HashSet<PruferCode>();
-		LabeledTree explorer;
+		// nodes that need to be visited
 		Stack<PruferCode> stack = new Stack<PruferCode>();
+		
+		LabeledTree explorer;
+		
 		stack.push(lt.getPruferCode());
 
 		while (!stack.isEmpty()) {
+			// get next unvisited flip-node
 			explorer = new LabeledTree(stack.pop(),true);
-			visited.add(explorer.getPruferCode());
+			// now it has been visited
+			visited.add(explorer.getPruferCode()); // a bit inefficient but whatever
+			// add it to the flip graph
 			this.addVertex(explorer);
+			// get its flip trees
 			Set<LabeledTree> neighbors = explorer.getFlipTrees();
 
-			
+			// push the new trees on the stack
 			for (LabeledTree iterator : neighbors)
 				if (!visited.contains(iterator.getPruferCode()))
 					stack.push(iterator.getPruferCode());
 			
-			//System.out.println("\n\n\nstack: " + stack + "\nexplorer: " + explorer + "\nvisited: " + visited);
 
-			// add neighbors to graph
+			// add flip nodes and flip edges to graph
 			Iterator<LabeledTree> iterator = neighbors.iterator();
 			while (iterator.hasNext()) {
 				
@@ -123,6 +130,8 @@ public class FlipGraph extends SimpleGraph<LabeledTree, DefaultEdge> {
 				if (!this.containsEdge(explorer, current) && !explorer.equals(current)) {
 					this.addVertex(current);
 					this.addEdge(explorer, current);
+					//if (!visited.contains(current.getPruferCode()))
+						//stack.push(current.getPruferCode());
 				}
 
 			}
