@@ -1,7 +1,10 @@
 package bachelor_thesis;
 
 import org.antlr.v4.runtime.misc.Pair;
+
+import org.jgrapht.alg.ConnectivityInspector;
 import org.jgrapht.Graph;
+import org.jgrapht.GraphTests;
 import org.jgrapht.alg.shortestpath.FloydWarshallShortestPaths;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.DefaultWeightedEdge;
@@ -20,34 +23,70 @@ public class Main {
 		// LabeledTree, FlipGraph, and solve the same issue for DefaultEdge and
 		// DefaultWeightedEdge (probably by creating new classes)
 
-		int n = 11; // TODO
+		// int n = 11; // TODO
 
 		// FlipGraph fg = new FlipGraph(4);
 		// System.out.println(fg);
 
-		/*FlipGraph fgRec = new FlipGraph();
-		FlipGraph fgIter = new FlipGraph();
+		/*
+		 * FlipGraph fgRec = new FlipGraph(); FlipGraph fgIter = new
+		 * FlipGraph();
+		 * 
+		 * fgRec.createFlipGraphRec(new LabeledTree(new PruferCode(new int[] {
+		 * 5, 2, 4, 1 }), true)); fgIter.createFlipGraph(new LabeledTree(new
+		 * PruferCode(new int[] { 5, 2, 4, 1 }), true));
+		 * 
+		 * Set<LabeledTree> copy = new HashSet<LabeledTree>(fgRec.vertexSet());
+		 * 
+		 * copy.removeAll(fgIter.vertexSet());
+		 * 
+		 * System.out.println("Set difference:" +
+		 * FlipGraph.treesToPruferCodes(copy));
+		 * 
+		 * LabeledTree lt1 = new LabeledTree(new PruferCode(new int[] { 3, 5, 4,
+		 * 0 }), true); LabeledTree lt2 = new LabeledTree(new PruferCode(new
+		 * int[] { 5, 1, 0, 0 }), true);
+		 * 
+		 * System.out.println(lt1); System.out.println(lt2);
+		 * 
+		 * System.out.println(lt1.getPruferCode());
+		 * System.out.println(lt2.getPruferCode());
+		 */
 
-		fgRec.createFlipGraphRec(new LabeledTree(new PruferCode(new int[] { 5, 2, 4, 1 }), true));
-		fgIter.createFlipGraph(new LabeledTree(new PruferCode(new int[] { 5, 2, 4, 1 }), true));
-
-		Set<LabeledTree> copy = new HashSet<LabeledTree>(fgRec.vertexSet());
-
-		copy.removeAll(fgIter.vertexSet());
-
-		System.out.println("Set difference:" + FlipGraph.treesToPruferCodes(copy));
-
-		LabeledTree lt1 = new LabeledTree(new PruferCode(new int[] { 3, 5, 4, 0 }), true);
-		LabeledTree lt2 = new LabeledTree(new PruferCode(new int[] { 5, 1, 0, 0 }), true);
-
-		System.out.println(lt1);
-		System.out.println(lt2);
+		/*
+		 * FlipGraph original = new FlipGraph(7); FlipGraph fg = (FlipGraph)
+		 * original.clone();
+		 * 
+		 * Iterator<LabeledTree> explorer = original.vertexSet().iterator();
+		 * while (explorer.hasNext()) { LabeledTree currentTree =
+		 * explorer.next(); if (!currentTree.isPath() &&
+		 * !currentTree.isPseudoPath()) fg.removeVertex(currentTree); }
+		 * FloydWarshallShortestPaths<LabeledTree, DefaultEdge> fwsp = new
+		 * FloydWarshallShortestPaths<LabeledTree, DefaultEdge>( fg);
+		 * LabeledTree source = new LabeledTree(new PruferCode(new int[] { 5, 0,
+		 * 6, 2, 1 }), true); LabeledTree sink = new LabeledTree(new
+		 * PruferCode(new int[] { 6, 4, 2, 5, 1 }), true);
+		 * GraphPath<LabeledTree, DefaultEdge> path = fwsp.getPath(source,
+		 * sink); Iterator<LabeledTree> iterator =
+		 * path.getVertexList().iterator(); LabeledTree prev = iterator.next();
+		 * LabeledTree current = null; while (iterator.hasNext() && prev !=
+		 * null) { current = iterator.next(); System.out.println(prev +
+		 * "\n\nflip: " + prev.howToGet(current) + "\n"); prev = current; }
+		 * System.out.println(current);
+		 * 
+		 * // permute(numbers, 0);
+		 * 
+		 */
 		
-		System.out.println(lt1.getPruferCode());
-		System.out.println(lt2.getPruferCode());
-		*/
-
-		getStats(n);
+		
+		FlipGraph fg = new FlipGraph(8);
+		FlipGraph fgp = fg.getJustWithPathsAndPseudoPaths();
+		System.out.println(GraphTests.isConnected(fgp));
+		System.out.println((new ConnectivityInspector<LabeledTree, DefaultEdge>(fgp)).connectedSets().size());
+		System.out.println(fgp);
+		
+		
+		// getStats(n);
 
 	}
 
@@ -165,6 +204,7 @@ public class Main {
 		}
 
 	}
+
 
 	public static boolean checkGraceful(Graph<Integer, DefaultEdge> g) {
 

@@ -1,7 +1,9 @@
 package bachelor_thesis;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
@@ -38,7 +40,7 @@ public class LabeledTree extends SimpleWeightedGraph<Integer, DefaultWeightedEdg
 	public LabeledTree(PruferCode pfc, boolean labeled) {
 
 		super(DefaultWeightedEdge.class);
-		
+
 		this.pfCode = pfc;
 		int n = pfc.getLength() + 2; // number of vertices
 		int[] appears = new int[n + 1]; // appears[i] = k means that label i
@@ -199,15 +201,15 @@ public class LabeledTree extends SimpleWeightedGraph<Integer, DefaultWeightedEdg
 		// TODO set Prufer code to NULL if an edge or vertex has been added (try
 		// overriding the methods addVertex(), addEdge() and reimplement the
 		// others)
-		//if (this.pfCode != null)
-			//return this.pfCode;
+		// if (this.pfCode != null)
+		// return this.pfCode;
 		ArrayList<Integer> vertexList = new ArrayList<Integer>(this.vertexSet());
 		Collections.sort(vertexList);
 		int n = vertexList.size();
-		
+
 		if (n < 2)
 			return null;
-		
+
 		int[] result = new int[n - 2];
 
 		// TODO lazy evaluation
@@ -359,7 +361,7 @@ public class LabeledTree extends SimpleWeightedGraph<Integer, DefaultWeightedEdg
 
 	public int hashCode() {
 		return this.getPruferCode().hashCode();
-		
+
 	}
 
 	/**
@@ -396,6 +398,38 @@ public class LabeledTree extends SimpleWeightedGraph<Integer, DefaultWeightedEdg
 			}
 		}
 		return false;
+	}
+
+	public boolean isPath() {
+		Iterator<Integer> iterator = this.vertexSet().iterator();
+		int leaves = 0;
+		while (iterator.hasNext()) {
+			if (this.degreeOf(iterator.next()) == 1)
+				leaves++;
+		}
+		return leaves == 2;
+	}
+
+	public boolean isCanonicalPath() {
+		if (!this.isPath())
+			return false;
+		Iterator<Integer> iterator = this.vertexSet().iterator();
+		while (iterator.hasNext()) {
+			int current = iterator.next();
+			if (this.degreeOf(current) == 1 && (current == 0 || current == this.vertexSet().size() - 1))
+				return true;
+		}
+		return false;
+	}
+
+	public boolean isPseudoPath() {
+		Iterator<Integer> iterator = this.vertexSet().iterator();
+		int leaves = 0;
+		while (iterator.hasNext()) {
+			if (this.degreeOf(iterator.next()) == 1)
+				leaves++;
+		}
+		return leaves == 3;
 	}
 
 	public Pair<DefaultWeightedEdge, DefaultWeightedEdge> getEdgeFlip(LabeledTree lt) {
@@ -439,8 +473,93 @@ public class LabeledTree extends SimpleWeightedGraph<Integer, DefaultWeightedEdg
 		return false;
 
 	}
-	
-	
+
+	@Override
+	public String toString() {
+		Integer[] vertexArr = this.vertexSet().toArray(new Integer[this.vertexSet().size()]);
+		Arrays.sort(vertexArr);
+		DefaultWeightedEdge[] edgeArr = this.edgeSet().toArray(new DefaultWeightedEdge[this.edgeSet().size()]);
+		final LabeledTree lt = (LabeledTree) this.clone();
+		Arrays.sort(edgeArr, new Comparator<DefaultWeightedEdge>() {
+			@Override
+			public int compare(DefaultWeightedEdge o1, DefaultWeightedEdge o2) {
+
+				if ((Math.min(lt.getEdgeSource(o1), lt.getEdgeTarget(o1)) == Math.min(lt.getEdgeSource(o2),
+						lt.getEdgeTarget(o2)))
+						&& (Math.max(lt.getEdgeSource(o1), lt.getEdgeTarget(o1)) == Math.max(lt.getEdgeSource(o2),
+								lt.getEdgeTarget(o2))))
+					return 0;
+
+				if (Math.min(lt.getEdgeSource(o1), lt.getEdgeTarget(o1)) < Math.min(lt.getEdgeSource(o2),
+						lt.getEdgeTarget(o2)))
+					return -1;
+
+				else if (Math.min(lt.getEdgeSource(o1), lt.getEdgeTarget(o1)) > Math.min(lt.getEdgeSource(o2),
+						lt.getEdgeTarget(o2)))
+					return 1;
+
+				else {
+					if (Math.max(lt.getEdgeSource(o1), lt.getEdgeTarget(o1)) < Math.max(lt.getEdgeSource(o2),
+							lt.getEdgeTarget(o2)))
+						return -1;
+					else
+						return 1;
+				}
+			}
+
+			@Override
+			public boolean equals(Object obj) {
+				return super.equals(obj);
+			}
+		});
+		String result = "([";
+
+		for (int i = 0; i < vertexArr.length; ++i)
+			result += vertexArr[i] + ", ";
+		result = result.substring(0, result.length() - 2) + "], [";
+
+		for (int i = 0; i < edgeArr.length; ++i)
+			result += "(" + Math.min(lt.getEdgeSource(edgeArr[i]), lt.getEdgeTarget(edgeArr[i])) + ","
+					+ Math.max(lt.getEdgeSource(edgeArr[i]), lt.getEdgeTarget(edgeArr[i])) + "),";
+		result = result.substring(0, result.length() - 1) + "])";
+		return result + "    with prufer code: " + this.getPruferCode();
+	}
+
+	public Pair<Pair<Integer, Integer>, Pair<Integer, Integer>> howToGet(LabeledTree lt) {
+		Set<DefaultWeightedEdge> set1 = new HashSet<DefaultWeightedEdge>(this.edgeSet());
+		Set<DefaultWeightedEdge> set2 = new HashSet<DefaultWeightedEdge>(lt.edgeSet());
+
+		DefaultWeightedEdge e1 = null;
+		Iterator<DefaultWeightedEdge> iterator = set1.iterator();
+		while (iterator.hasNext()) {
+			DefaultWeightedEdge current = iterator.next();
+			if (!edgeIsContainedIn(current, set2)) {
+				e1 = current;
+				break;
+			}
+		}
+
+		DefaultWeightedEdge e2 = null;
+		iterator = set2.iterator();
+		while (iterator.hasNext()) {
+			DefaultWeightedEdge current = iterator.next();
+			if (!edgeIsContainedIn(current, set1)) {
+				e2 = current;
+				break;
+			}
+		}
+
+		int min1 = Math.min(this.getEdgeSource(e1), this.getEdgeTarget(e1));
+		int min2 = Math.min(this.getEdgeSource(e2), this.getEdgeTarget(e2));
+		int max1 = Math.max(this.getEdgeSource(e1), this.getEdgeTarget(e1));
+		int max2 = Math.max(this.getEdgeSource(e2), this.getEdgeTarget(e2));
+
+		Pair<Integer, Integer> pair1 = new Pair<Integer, Integer>(min1, max1);
+		Pair<Integer, Integer> pair2 = new Pair<Integer, Integer>(min2, max2);
+
+		return new Pair<Pair<Integer, Integer>, Pair<Integer, Integer>>(pair1, pair2);
+
+	}
 
 	/**
 	 * This 'serialVersionUID' variable is here just to avoid a warning.

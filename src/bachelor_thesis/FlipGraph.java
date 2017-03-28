@@ -17,8 +17,8 @@ import org.antlr.v4.runtime.misc.Pair;
 
 public class FlipGraph extends SimpleGraph<LabeledTree, DefaultEdge> {
 
-	//private int n = -1;
-	
+	// private int n = -1;
+
 	public FlipGraph() {
 		super(DefaultEdge.class);
 	}
@@ -100,9 +100,9 @@ public class FlipGraph extends SimpleGraph<LabeledTree, DefaultEdge> {
 			LabeledTree explorer = stack.pop();
 			this.addVertex(explorer);
 			visited.add(explorer);
-			
+
 			Set<LabeledTree> neighbors = explorer.getFlipTrees();
-			
+
 			Iterator<LabeledTree> iterator = neighbors.iterator();
 			while (iterator.hasNext()) {
 				LabeledTree current = iterator.next();
@@ -113,9 +113,9 @@ public class FlipGraph extends SimpleGraph<LabeledTree, DefaultEdge> {
 				if (!this.containsEdge(explorer, current))
 					this.addEdge(explorer, current);
 			}
-			
+
 		}
-		
+
 	}
 
 	/**
@@ -183,16 +183,28 @@ public class FlipGraph extends SimpleGraph<LabeledTree, DefaultEdge> {
 		String result = "Vertices:\n";
 		LabeledTree[] flipNodes = this.vertexSet().toArray(new LabeledTree[0]);
 		for (int i = 0; i < flipNodes.length; i++) {
-			result += "lt" + i + ": " + flipNodes[i] + "\n";
+			if (i < 10)
+				result += "lt" + i + " : " + flipNodes[i] + "    is path: " + flipNodes[i].isPath() + "\n";
+			else
+				result += "lt" + i + ": " + flipNodes[i] + "    is path: " + flipNodes[i].isPath() + "\n";
+
 		}
 
 		result += "\nEdges:\n";
 
+		int count = 0;
 		Iterator<DefaultEdge> iterator = this.edgeSet().iterator();
 		while (iterator.hasNext()) {
 			result += this.getEdgeIndicesFromArray(iterator.next(), flipNodes) + ", ";
+			if (count++ > 10) {
+				count = 0;
+				result += "\n";
+			}
 		}
-		return result.substring(0, result.length() - 2);
+		int k = 2;
+		if (result.charAt(result.length() - 1) == '\n')
+			k++;
+		return result.substring(0, result.length() - k);
 	}
 
 	private Pair<Integer, Integer> getEdgeIndicesFromArray(DefaultEdge e, LabeledTree[] ltArray) {
@@ -227,15 +239,27 @@ public class FlipGraph extends SimpleGraph<LabeledTree, DefaultEdge> {
 		}
 		return res;
 	}
-	
+
 	public static Set<PruferCode> treesToPruferCodes(Set<LabeledTree> trees) {
 		Iterator<LabeledTree> iterator = trees.iterator();
 		Set<PruferCode> result = new HashSet<PruferCode>();
-		while(iterator.hasNext()) {
+		while (iterator.hasNext()) {
 			result.add(iterator.next().getPruferCode());
 		}
 		return result;
-		
+
+	}
+
+	public FlipGraph getJustWithPathsAndPseudoPaths() {
+		FlipGraph copy = (FlipGraph) this.clone();
+
+		Iterator<LabeledTree> iterator = this.vertexSet().iterator();
+		while (iterator.hasNext()) {
+			LabeledTree current = iterator.next();
+			if (!current.isPath() && !current.isPseudoPath())
+				copy.removeVertex(current);
+		}
+		return copy;
 	}
 
 	/**
