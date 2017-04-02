@@ -367,6 +367,7 @@ public class LabeledTree extends SimpleWeightedGraph<Integer, DefaultWeightedEdg
 		}
 		return result;
 	}
+	
 
 	private boolean isLeaf(int vertex) {
 		return this.degreeOf(vertex) == 1;

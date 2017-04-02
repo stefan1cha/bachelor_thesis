@@ -19,6 +19,7 @@ public class FlipGraph extends SimpleGraph<LabeledTree, DefaultEdge> {
 
 	// private int n = -1;
 
+
 	public FlipGraph() {
 		super(DefaultEdge.class);
 		

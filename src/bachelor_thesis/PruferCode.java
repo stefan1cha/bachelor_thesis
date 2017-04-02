@@ -6,6 +6,7 @@ import java.util.Iterator;
 
 public class PruferCode {
 
+	
 	/**
 	 * Stores the Prufer code
 	 */
