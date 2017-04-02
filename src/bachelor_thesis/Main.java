@@ -83,8 +83,8 @@ public class Main {
 		 * DefaultEdge>(fgp)).connectedSets().size()); System.out.println(fgp);
 		 */
 
-		int from = 11;
-		int n = 11;
+		int from = 3;
+		int n = 13;
 		long start = System.nanoTime();
 		//FlipGraph fg = new FlipGraph(8);
 		getStats(from, n);
@@ -108,7 +108,7 @@ public class Main {
 
 		for (int i = start; i <= n; ++i) {
 			fg = new FlipGraph(i);
-			//fwsp = new FloydWarshallShortestPaths<>(fg);
+			fwsp = new FloydWarshallShortestPaths<>(fg);
 			maxDeg = 0;
 			minDeg = Integer.MAX_VALUE;
 			avgDeg = 0;
@@ -118,7 +118,7 @@ public class Main {
 
 			System.out.println("#vertices = " + fg.vertexSet().size());
 
-			//System.out.println("\ndiameter = " + (int) fwsp.getDiameter());
+			System.out.println("\ndiameter = " + (int) fwsp.getDiameter());
 
 			for (LabeledTree lt : fg.vertexSet()) {
 				if (fg.degreeOf(lt) > maxDeg)
@@ -196,14 +196,14 @@ public class Main {
 				// System.out.println(canonicalPath);
 				// System.out.println(canonicalStar);
 
-				/*System.out.println("\n\ndistance between canonical path and canonical star = "
+				System.out.println("\n\ndistance between canonical path and canonical star = "
 						+ fwsp.getPath(canonicalPath, canonicalStar).getLength());
 				System.out.println("Obtain the canonical star from the canonical path as follows:");
 				Iterator<Pair<DefaultWeightedEdge, DefaultWeightedEdge>> iterator = fg
 						.getFlipSequence(canonicalPath, canonicalStar).iterator();
 				while (iterator.hasNext()) {
 					System.out.println(iterator.next());
-				}*/
+				}
 			}
 
 		}
