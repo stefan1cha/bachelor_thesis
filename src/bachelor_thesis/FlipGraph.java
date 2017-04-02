@@ -77,7 +77,7 @@ public class FlipGraph extends SimpleGraph<LabeledTree, DefaultEdge> {
 	 */
 	public void createFlipGraphRec(LabeledTree lt) {
 		this.addVertex(lt);
-		Set<LabeledTree> neighbors = lt.getFlipTrees();
+		Set<LabeledTree> neighbors = lt.getFlipTreesAux();
 		this.addVertexSet(neighbors);
 
 		Iterator<LabeledTree> iterator = neighbors.iterator();
@@ -101,7 +101,7 @@ public class FlipGraph extends SimpleGraph<LabeledTree, DefaultEdge> {
 			this.addVertex(explorer);
 			visited.add(explorer);
 
-			Set<LabeledTree> neighbors = explorer.getFlipTrees();
+			Set<LabeledTree> neighbors = explorer.getFlipTreesAux();
 
 			Iterator<LabeledTree> iterator = neighbors.iterator();
 			while (iterator.hasNext()) {

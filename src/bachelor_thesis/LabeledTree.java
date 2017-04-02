@@ -8,6 +8,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
+import org.jgrapht.traverse.DepthFirstIterator;
 import org.antlr.v4.runtime.misc.Pair;
 import org.jgrapht.GraphTests;
 import org.jgrapht.graph.DefaultWeightedEdge;
@@ -302,6 +303,70 @@ public class LabeledTree extends SimpleWeightedGraph<Integer, DefaultWeightedEdg
 		return flipTrees;
 	}
 
+	public Set<LabeledTree> getFlipTreesAux() {
+
+		Set<LabeledTree> result = new HashSet<LabeledTree>();
+
+		// number of vertices
+		int n = this.vertexSet().size();
+
+		// store for each edge its source, target, and weight
+		HashSet<Pair<Integer, Integer>> edges = new HashSet<Pair<Integer, Integer>>();
+		Iterator<DefaultWeightedEdge> edgeExplorer = this.edgeSet().iterator();
+		while (edgeExplorer.hasNext()) {
+			DefaultWeightedEdge e = edgeExplorer.next();
+			edges.add(new Pair<Integer, Integer>(this.getEdgeSource(e), this.getEdgeTarget(e)));
+		}
+
+
+		Iterator<Pair<Integer,Integer>> edgeIterator = edges.iterator();
+		while (edgeIterator.hasNext()) {
+
+			// Pick next edge
+			Pair<Integer, Integer> e = edgeIterator.next();
+			int edgeSource = e.a;
+			int edgeTarget = e.b;
+			int edgeLabel = Math.abs(edgeSource-edgeTarget);
+
+			// Remove the edge
+			this.removeEdge(edgeSource, edgeTarget);
+
+			// Get the vertices of one of the connected components
+			Set<Integer> connectedComponentVertices = new HashSet<Integer>();
+			DepthFirstIterator<Integer, DefaultWeightedEdge> iterator = new DepthFirstIterator<Integer, DefaultWeightedEdge>(
+					this, edgeSource);
+			iterator.setCrossComponentTraversal(false);
+			while (iterator.hasNext())
+				connectedComponentVertices.add(iterator.next());
+
+
+			// Try re-attaching the edge somewhere else
+			iterator = new DepthFirstIterator<Integer, DefaultWeightedEdge>(this, edgeSource);
+			while (iterator.hasNext()) {
+				int currentVertex = iterator.next();
+
+				if ((0 <= currentVertex + edgeLabel) && (currentVertex + edgeLabel < n)
+						&& ((currentVertex + edgeLabel != edgeTarget) || currentVertex != edgeSource)
+						&& !connectedComponentVertices.contains(currentVertex + edgeLabel)) {
+					LabeledTree newTree = (LabeledTree) this.clone();
+					newTree.addEdge(currentVertex, currentVertex + edgeLabel);
+					result.add(newTree);
+				}
+
+				if ((0 <= currentVertex - edgeLabel) && (currentVertex - edgeLabel < n)
+						&& ((currentVertex - edgeLabel != edgeTarget) || (currentVertex != edgeSource))
+						&& !connectedComponentVertices.contains(currentVertex - edgeLabel)) {
+					LabeledTree newTree = (LabeledTree) this.clone();
+					newTree.addEdge(currentVertex, currentVertex - edgeLabel);
+					result.add(newTree);
+				}
+			}
+			// add edge back
+			this.addEdge(edgeSource, edgeTarget);
+		}
+		return result;
+	}
+
 	private boolean isLeaf(int vertex) {
 		return this.degreeOf(vertex) == 1;
 	}
@@ -522,7 +587,7 @@ public class LabeledTree extends SimpleWeightedGraph<Integer, DefaultWeightedEdg
 			result += "(" + Math.min(lt.getEdgeSource(edgeArr[i]), lt.getEdgeTarget(edgeArr[i])) + ","
 					+ Math.max(lt.getEdgeSource(edgeArr[i]), lt.getEdgeTarget(edgeArr[i])) + "),";
 		result = result.substring(0, result.length() - 1) + "])";
-		return result + "    with prufer code: " + this.getPruferCode();
+		return result; // + " with prufer code: " + this.getPruferCode();
 	}
 
 	public Pair<Pair<Integer, Integer>, Pair<Integer, Integer>> howToGet(LabeledTree lt) {
@@ -559,6 +624,25 @@ public class LabeledTree extends SimpleWeightedGraph<Integer, DefaultWeightedEdg
 
 		return new Pair<Pair<Integer, Integer>, Pair<Integer, Integer>>(pair1, pair2);
 
+	}
+
+	public static LabeledTree canonicalPath(int n) {
+		int min = 0;
+		int max = n;
+		LabeledTree canonicalPath = new LabeledTree();
+		canonicalPath.addVertex(0);
+		for (int iter = 1; iter < n; iter++) {
+			if (iter % 2 == 0) {
+				min++;
+				canonicalPath.addVertex(min);
+				canonicalPath.addEdge(min, max);
+			} else {
+				max--;
+				canonicalPath.addVertex(max);
+				canonicalPath.addEdge(min, max);
+			}
+		}
+		return canonicalPath;
 	}
 
 	/**

@@ -2,9 +2,7 @@ package bachelor_thesis;
 
 import org.antlr.v4.runtime.misc.Pair;
 
-import org.jgrapht.alg.ConnectivityInspector;
 import org.jgrapht.Graph;
-import org.jgrapht.GraphTests;
 import org.jgrapht.alg.shortestpath.FloydWarshallShortestPaths;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.DefaultWeightedEdge;
@@ -23,7 +21,7 @@ public class Main {
 		// LabeledTree, FlipGraph, and solve the same issue for DefaultEdge and
 		// DefaultWeightedEdge (probably by creating new classes)
 
-		// int n = 11; // TODO
+		int n = 11; // TODO
 
 		// FlipGraph fg = new FlipGraph(4);
 		// System.out.println(fg);
@@ -77,17 +75,17 @@ public class Main {
 		 * // permute(numbers, 0);
 		 * 
 		 */
-		
-		
-		FlipGraph fg = new FlipGraph(8);
-		FlipGraph fgp = fg.getJustWithPathsAndPseudoPaths();
-		System.out.println(GraphTests.isConnected(fgp));
-		System.out.println((new ConnectivityInspector<LabeledTree, DefaultEdge>(fgp)).connectedSets().size());
-		System.out.println(fgp);
-		
-		
-		// getStats(n);
 
+		/*
+		 * FlipGraph fg = new FlipGraph(14); FlipGraph fgp =
+		 * fg.getJustWithPathsAndPseudoPaths();
+		 * System.out.println(GraphTests.isConnected(fgp));
+		 * System.out.println((new ConnectivityInspector<LabeledTree,
+		 * DefaultEdge>(fgp)).connectedSets().size()); System.out.println(fgp);
+		 */
+
+		getStats(n);
+		
 	}
 
 	public static void getStats(int n) {
@@ -204,7 +202,6 @@ public class Main {
 		}
 
 	}
-
 
 	public static boolean checkGraceful(Graph<Integer, DefaultEdge> g) {
 
