@@ -2,6 +2,7 @@ package bachelor_thesis;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -129,6 +130,8 @@ public class LabeledTree extends SimpleWeightedGraph<Integer, DefaultWeightedEdg
 			this.addVertex(v2);
 		this.addEdge(v1, v2);
 
+		this.pfCode = null;
+
 	}
 
 	/**
@@ -202,8 +205,8 @@ public class LabeledTree extends SimpleWeightedGraph<Integer, DefaultWeightedEdg
 		// TODO set Prufer code to NULL if an edge or vertex has been added (try
 		// overriding the methods addVertex(), addEdge() and reimplement the
 		// others)
-		// if (this.pfCode != null)
-		// return this.pfCode;
+		if (this.pfCode != null)
+			return this.pfCode;
 		ArrayList<Integer> vertexList = new ArrayList<Integer>(this.vertexSet());
 		Collections.sort(vertexList);
 		int n = vertexList.size();
@@ -318,15 +321,14 @@ public class LabeledTree extends SimpleWeightedGraph<Integer, DefaultWeightedEdg
 			edges.add(new Pair<Integer, Integer>(this.getEdgeSource(e), this.getEdgeTarget(e)));
 		}
 
-
-		Iterator<Pair<Integer,Integer>> edgeIterator = edges.iterator();
+		Iterator<Pair<Integer, Integer>> edgeIterator = edges.iterator();
 		while (edgeIterator.hasNext()) {
 
 			// Pick next edge
 			Pair<Integer, Integer> e = edgeIterator.next();
 			int edgeSource = e.a;
 			int edgeTarget = e.b;
-			int edgeLabel = Math.abs(edgeSource-edgeTarget);
+			int edgeLabel = Math.abs(edgeSource - edgeTarget);
 
 			// Remove the edge
 			this.removeEdge(edgeSource, edgeTarget);
@@ -338,7 +340,6 @@ public class LabeledTree extends SimpleWeightedGraph<Integer, DefaultWeightedEdg
 			iterator.setCrossComponentTraversal(false);
 			while (iterator.hasNext())
 				connectedComponentVertices.add(iterator.next());
-
 
 			// Try re-attaching the edge somewhere else
 			iterator = new DepthFirstIterator<Integer, DefaultWeightedEdge>(this, edgeSource);
@@ -425,6 +426,8 @@ public class LabeledTree extends SimpleWeightedGraph<Integer, DefaultWeightedEdg
 	}
 
 	public int hashCode() {
+		
+		//return -1;
 		return this.getPruferCode().hashCode();
 
 	}
@@ -644,7 +647,71 @@ public class LabeledTree extends SimpleWeightedGraph<Integer, DefaultWeightedEdg
 		}
 		return canonicalPath;
 	}
+	
+	@Override
+	public boolean addVertex(Integer v) {
+		pfCode = null;
+		return super.addVertex(v);
+	}
+	
+	@Override
+	public DefaultWeightedEdge addEdge(Integer arg0, Integer arg1) {
+		pfCode = null;
+		return super.addEdge(arg0, arg1);
+	}
+	
+	@Override
+	public boolean addEdge(Integer sourceVertex, Integer targetVertex, DefaultWeightedEdge e) {
+		pfCode = null;
+		return super.addEdge(sourceVertex, targetVertex, e);
+	}
+	
+	
+	@Override
+	public boolean removeAllEdges(Collection<? extends DefaultWeightedEdge> arg0) {
+		pfCode = null;
+		return super.removeAllEdges(arg0);
+	}
+	
+	@Override
+	public Set<DefaultWeightedEdge> removeAllEdges(Integer sourceVertex, Integer targetVertex) {
+		pfCode = null;
+		return super.removeAllEdges(sourceVertex, targetVertex);
+	}
+	
+	@Override
+	public boolean removeAllVertices(Collection<? extends Integer> arg0) {
+		pfCode = null;
+		return super.removeAllVertices(arg0);
+	}
+	
+	@Override
+	public boolean removeEdge(DefaultWeightedEdge e) {
+		pfCode = null;
+		return super.removeEdge(e);
+	}
+	
+	@Override
+	public DefaultWeightedEdge removeEdge(Integer sourceVertex, Integer targetVertex) {
+		pfCode = null;
+		return super.removeEdge(sourceVertex, targetVertex);
+	}
+	
+	@Override
+	public boolean removeVertex(Integer arg0) {
+		pfCode = null;
+		return super.removeVertex(arg0);
+	}
+	
+	@Override
+	protected boolean removeAllEdges(DefaultWeightedEdge[] arg0) {
+		pfCode = null;
+		return super.removeAllEdges(arg0);
+	}
 
+	
+	
+	
 	/**
 	 * This 'serialVersionUID' variable is here just to avoid a warning.
 	 */

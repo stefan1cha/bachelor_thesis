@@ -86,7 +86,15 @@ public class PruferCode {
 
 	@Override
 	public int hashCode() {
-		return this.hash;
+		if (hash == -1) {
+			hash = 0;
+			Iterator<Integer> iterator = code.iterator();
+			while (iterator.hasNext()) {
+				hash += iterator.next();
+				hash *= 10;
+			}
+		}
+		return this.hash; // % 100;
 	}
 
 	private boolean has(int x) {

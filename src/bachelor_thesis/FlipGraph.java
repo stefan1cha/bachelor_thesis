@@ -21,6 +21,7 @@ public class FlipGraph extends SimpleGraph<LabeledTree, DefaultEdge> {
 
 	public FlipGraph() {
 		super(DefaultEdge.class);
+		
 	}
 
 	/**
@@ -67,7 +68,7 @@ public class FlipGraph extends SimpleGraph<LabeledTree, DefaultEdge> {
 
 		this.createFlipGraph(lt);
 	}
-
+	
 	/**
 	 * Construct a flip graph starting from LabeledTree 'lt'. The constructor
 	 * cannot replace this method, since it recursive. In Java, constructors
