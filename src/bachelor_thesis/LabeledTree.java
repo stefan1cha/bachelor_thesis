@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 import org.jgrapht.traverse.DepthFirstIterator;
@@ -16,6 +17,8 @@ import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.SimpleWeightedGraph;
 
 public class LabeledTree extends SimpleWeightedGraph<Integer, DefaultWeightedEdge> {
+	
+	private int id = -1;
 
 	/**
 	 * Stores the prufer code (if it has been already given or computed before).
@@ -96,7 +99,68 @@ public class LabeledTree extends SimpleWeightedGraph<Integer, DefaultWeightedEdg
 			this.labelEdges();
 
 	}
+	
+	public void setId(int arg) {
+		this.id = arg;
+	}
+	
+	public int getId() {
+		return this.id;
+	}
 
+	public LabeledTree(List<Integer> originalSequence) {
+
+		super(DefaultWeightedEdge.class);
+		List<Integer> sequence = new ArrayList<Integer>(originalSequence);
+		int n = sequence.size() + 2; // number of vertices
+		int[] appears = new int[n + 1]; // appears[i] = k means that label i
+										// appears k times in the pfc
+		int[] taken = new int[n + 1]; // which numbers are available for u (see
+										// below)
+
+		// initialize 'appears'
+		Iterator<Integer> iterator = sequence.iterator();
+		while (iterator.hasNext()) {
+			appears[iterator.next()]++;
+		}
+		int u;
+		int v;
+		for (int i = 0; i < n - 2; i++) {
+			// get first label
+			v = sequence.get(0);
+			// remove first label
+			sequence.remove(0);
+			// search for smallest label u in 'taken' s.t. u is not in
+			// 'sequence
+			// Then update 'sequence' and 'appears'
+			for (u = 0; u < appears.length; ++u) {
+				if (appears[u] == 0 && taken[u] == 0) {
+					sequence.add(u);
+					appears[u]++;
+					appears[v]--;
+					taken[u]++;
+					break;
+				}
+			}
+
+			this.addEdgeAndVertices(u, v);
+		}
+
+		u = v = -1;
+		for (int i = 0; i < taken.length; ++i) {
+			if (taken[i] == 0) {
+				if (u == -1)
+					u = i;
+				else if (v == -1)
+					v = i;
+				else
+					break;
+			}
+		}
+		this.addEdgeAndVertices(u, v);
+	}
+	
+	
 	/**
 	 * A basic constructor.
 	 */
@@ -202,9 +266,6 @@ public class LabeledTree extends SimpleWeightedGraph<Integer, DefaultWeightedEdg
 	 * @return the prufer code
 	 */
 	public PruferCode getPruferCode() {
-		// TODO set Prufer code to NULL if an edge or vertex has been added (try
-		// overriding the methods addVertex(), addEdge() and reimplement the
-		// others)
 		if (this.pfCode != null)
 			return this.pfCode;
 		ArrayList<Integer> vertexList = new ArrayList<Integer>(this.vertexSet());
@@ -216,7 +277,6 @@ public class LabeledTree extends SimpleWeightedGraph<Integer, DefaultWeightedEdg
 
 		int[] result = new int[n - 2];
 
-		// TODO lazy evaluation
 
 		LabeledTree treeCopy = (LabeledTree) this.clone();
 
@@ -365,6 +425,7 @@ public class LabeledTree extends SimpleWeightedGraph<Integer, DefaultWeightedEdg
 			// add edge back
 			this.addEdge(edgeSource, edgeTarget);
 		}
+		result.remove(this);
 		return result;
 	}
 	

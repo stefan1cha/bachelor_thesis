@@ -1,103 +1,25 @@
 package bachelor_thesis;
 
-import org.antlr.v4.runtime.misc.Pair;
-
 import org.jgrapht.Graph;
 import org.jgrapht.alg.shortestpath.FloydWarshallShortestPaths;
 import org.jgrapht.graph.DefaultEdge;
-import org.jgrapht.graph.DefaultWeightedEdge;
 
-import java.awt.font.GlyphJustificationInfo;
 import java.text.DecimalFormat;
 import java.util.Arrays;
 import java.util.Comparator;
-import java.util.Iterator;
 import java.util.Set;
 
 public class Main {
 
 	public static void main(String[] args) {
 
-		// TODO ***IMPORTANT*** implement equals() and hashCode() for
-		// LabeledTree, FlipGraph, and solve the same issue for DefaultEdge and
-		// DefaultWeightedEdge (probably by creating new classes)
-
-		// FlipGraph fg = new FlipGraph(4);
-		// System.out.println(fg);
-
-		/*
-		 * FlipGraph fgRec = new FlipGraph(); FlipGraph fgIter = new
-		 * FlipGraph();
-		 * 
-		 * fgRec.createFlipGraphRec(new LabeledTree(new PruferCode(new int[] {
-		 * 5, 2, 4, 1 }), true)); fgIter.createFlipGraph(new LabeledTree(new
-		 * PruferCode(new int[] { 5, 2, 4, 1 }), true));
-		 * 
-		 * Set<LabeledTree> copy = new HashSet<LabeledTree>(fgRec.vertexSet());
-		 * 
-		 * copy.removeAll(fgIter.vertexSet());
-		 * 
-		 * System.out.println("Set difference:" +
-		 * FlipGraph.treesToPruferCodes(copy));
-		 * 
-		 * LabeledTree lt1 = new LabeledTree(new PruferCode(new int[] { 3, 5, 4,
-		 * 0 }), true); LabeledTree lt2 = new LabeledTree(new PruferCode(new
-		 * int[] { 5, 1, 0, 0 }), true);
-		 * 
-		 * System.out.println(lt1); System.out.println(lt2);
-		 * 
-		 * System.out.println(lt1.getPruferCode());
-		 * System.out.println(lt2.getPruferCode());
-		 */
-
-		/*
-		 * FlipGraph original = new FlipGraph(7); FlipGraph fg = (FlipGraph)
-		 * original.clone();
-		 * 
-		 * Iterator<LabeledTree> explorer = original.vertexSet().iterator();
-		 * while (explorer.hasNext()) { LabeledTree currentTree =
-		 * explorer.next(); if (!currentTree.isPath() &&
-		 * !currentTree.isPseudoPath()) fg.removeVertex(currentTree); }
-		 * FloydWarshallShortestPaths<LabeledTree, DefaultEdge> fwsp = new
-		 * FloydWarshallShortestPaths<LabeledTree, DefaultEdge>( fg);
-		 * LabeledTree source = new LabeledTree(new PruferCode(new int[] { 5, 0,
-		 * 6, 2, 1 }), true); LabeledTree sink = new LabeledTree(new
-		 * PruferCode(new int[] { 6, 4, 2, 5, 1 }), true);
-		 * GraphPath<LabeledTree, DefaultEdge> path = fwsp.getPath(source,
-		 * sink); Iterator<LabeledTree> iterator =
-		 * path.getVertexList().iterator(); LabeledTree prev = iterator.next();
-		 * LabeledTree current = null; while (iterator.hasNext() && prev !=
-		 * null) { current = iterator.next(); System.out.println(prev +
-		 * "\n\nflip: " + prev.howToGet(current) + "\n"); prev = current; }
-		 * System.out.println(current);
-		 * 
-		 * // permute(numbers, 0);
-		 * 
-		 */
-
-		/*
-		 * FlipGraph fg = new FlipGraph(14); FlipGraph fgp =
-		 * fg.getJustWithPathsAndPseudoPaths();
-		 * System.out.println(GraphTests.isConnected(fgp));
-		 * System.out.println((new ConnectivityInspector<LabeledTree,
-		 * DefaultEdge>(fgp)).connectedSets().size()); System.out.println(fgp);
-		 */
-
-		int from = 3;
-		int n = 13;
-		long start = System.nanoTime();
-		//FlipGraph fg = new FlipGraph(8);
-		getStats(from, n);
-		long end = System.nanoTime();
-		System.out.println("\n\n\n\ntime: " + ((end * 1.0 - start) / (10 ^ 9)));
-		//System.out.println(fg.vertexSet().size());
+		getStats(12, 12);
 
 	}
 
 	public static void getStats(int start, int n) {
 
 		FlipGraph fg;
-		FloydWarshallShortestPaths<LabeledTree, DefaultEdge> fwsp = null;
 
 		int maxDeg;
 		int minDeg;
@@ -108,7 +30,6 @@ public class Main {
 
 		for (int i = start; i <= n; ++i) {
 			fg = new FlipGraph(i);
-			fwsp = new FloydWarshallShortestPaths<>(fg);
 			maxDeg = 0;
 			minDeg = Integer.MAX_VALUE;
 			avgDeg = 0;
@@ -117,8 +38,7 @@ public class Main {
 					+ "\n=================================================\n");
 
 			System.out.println("#vertices = " + fg.vertexSet().size());
-
-			System.out.println("\ndiameter = " + (int) fwsp.getDiameter());
+			System.out.println("#edges = " + fg.edgeSet().size());
 
 			for (LabeledTree lt : fg.vertexSet()) {
 				if (fg.degreeOf(lt) > maxDeg)
@@ -148,7 +68,6 @@ public class Main {
 					else
 						return 1;
 				};
-				
 
 				@Override
 				public boolean equals(Object obj) {
@@ -163,48 +82,21 @@ public class Main {
 				nodesOfDeg[fg.degreeOf(vertexArray[j])]++;
 			}
 
-			System.out.println("\n\n  degree  |   number of vertices of that degree");
+			FloydWarshallShortestPaths<LabeledTree, DefaultEdge> fwsp = null;
+			fwsp = new FloydWarshallShortestPaths<>(fg);
+			System.out.println("\ndiameter = " + (int) fwsp.getDiameter());
+
+			System.out.println("\n\n  degree  |   number of vertices of that degree\n------------------------");
 			for (int j = 0; j < nodesOfDeg.length; ++j) {
 				if (j < 10)
-					System.out.println("     " + j + "    |    " + nodesOfDeg[j]);
+					System.out.println("(" + j + ", " + nodesOfDeg[j] + ")");
 				else
-					System.out.println("     " + j + "   |    " + nodesOfDeg[j]);
+					System.out.println("(" + j + ", " + nodesOfDeg[j] + ")");
 
 			}
 
-			if (i > 3) {
-				int min = 0;
-				int max = i;
-				LabeledTree canonicalPath = new LabeledTree();
-				canonicalPath.addVertex(0);
-				for (int iter = 1; iter < i; iter++) {
-					if (iter % 2 == 0) {
-						min++;
-						canonicalPath.addVertex(min);
-						canonicalPath.addEdge(min, max);
-					} else {
-						max--;
-						canonicalPath.addVertex(max);
-						canonicalPath.addEdge(min, max);
-					}
-				}
-
-				int[] starArr = new int[i - 2];
-				Arrays.fill(starArr, 0);
-				LabeledTree canonicalStar = new LabeledTree(new PruferCode(starArr), true);
-
-				// System.out.println(canonicalPath);
-				// System.out.println(canonicalStar);
-
-				System.out.println("\n\ndistance between canonical path and canonical star = "
-						+ fwsp.getPath(canonicalPath, canonicalStar).getLength());
-				System.out.println("Obtain the canonical star from the canonical path as follows:");
-				Iterator<Pair<DefaultWeightedEdge, DefaultWeightedEdge>> iterator = fg
-						.getFlipSequence(canonicalPath, canonicalStar).iterator();
-				while (iterator.hasNext()) {
-					System.out.println(iterator.next());
-				}
-			}
+			System.out.println(i + " & " + fg.vertexSet().size() + " & " + fg.edgeSet().size() + " & " + maxDeg + " & "
+					+ minDeg + " & " + avgDeg + " & " + fg.degreeOf(vertexArray[vertexArray.length / 2]) + " & " + "0");
 
 		}
 

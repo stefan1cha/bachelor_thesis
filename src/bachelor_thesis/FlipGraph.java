@@ -19,10 +19,9 @@ public class FlipGraph extends SimpleGraph<LabeledTree, DefaultEdge> {
 
 	// private int n = -1;
 
-
 	public FlipGraph() {
 		super(DefaultEdge.class);
-		
+
 	}
 
 	/**
@@ -69,7 +68,7 @@ public class FlipGraph extends SimpleGraph<LabeledTree, DefaultEdge> {
 
 		this.createFlipGraph(lt);
 	}
-	
+
 	/**
 	 * Construct a flip graph starting from LabeledTree 'lt'. The constructor
 	 * cannot replace this method, since it recursive. In Java, constructors
@@ -94,6 +93,7 @@ public class FlipGraph extends SimpleGraph<LabeledTree, DefaultEdge> {
 	}
 
 	public void createFlipGraph(LabeledTree lt) {
+		int counter = 0;
 		Stack<LabeledTree> stack = new Stack<LabeledTree>();
 		HashSet<LabeledTree> visited = new HashSet<LabeledTree>();
 
@@ -115,7 +115,8 @@ public class FlipGraph extends SimpleGraph<LabeledTree, DefaultEdge> {
 				if (!this.containsEdge(explorer, current))
 					this.addEdge(explorer, current);
 			}
-
+			if (counter++ > 24000)
+				System.out.println(this.vertexSet().size());
 		}
 
 	}
@@ -176,12 +177,12 @@ public class FlipGraph extends SimpleGraph<LabeledTree, DefaultEdge> {
 	public void addVertexSet(Set<LabeledTree> vertexSet) {
 		Iterator<LabeledTree> iterator = vertexSet.iterator();
 		while (iterator.hasNext()) {
-			this.addVertex(iterator.next()); // TODO change this method
+			this.addVertex(iterator.next());
 		}
 	}
 
 	public String toString() {
-		System.out.println("\n\n\nUsing Stefan's toString() method:\n");
+		// System.out.println("\n\n\nUsing Stefan's toString() method:\n");
 		String result = "Vertices:\n";
 		LabeledTree[] flipNodes = this.vertexSet().toArray(new LabeledTree[0]);
 		for (int i = 0; i < flipNodes.length; i++) {
@@ -262,6 +263,10 @@ public class FlipGraph extends SimpleGraph<LabeledTree, DefaultEdge> {
 				copy.removeVertex(current);
 		}
 		return copy;
+	}
+
+	public int getDiameter() {
+		return 0;
 	}
 
 	/**

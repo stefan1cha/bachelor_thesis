@@ -9,5 +9,6 @@
 	<classpathentry kind="lib" path="lib/jgrapht-ext-1.0.1-uber.jar"/>
 	<classpathentry kind="lib" path="lib/jgrapht-ext-1.0.1.jar"/>
 	<classpathentry kind="lib" path="lib/jgraphx-2.0.0.1.jar"/>
+	<classpathentry kind="lib" path="/home/stefan/Documents/Bachelor Thesis/guava-19.0.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
