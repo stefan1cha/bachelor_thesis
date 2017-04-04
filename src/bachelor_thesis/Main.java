@@ -82,9 +82,9 @@ public class Main {
 				nodesOfDeg[fg.degreeOf(vertexArray[j])]++;
 			}
 
-			FloydWarshallShortestPaths<LabeledTree, DefaultEdge> fwsp = null;
-			fwsp = new FloydWarshallShortestPaths<>(fg);
-			System.out.println("\ndiameter = " + (int) fwsp.getDiameter());
+			// FloydWarshallShortestPaths<LabeledTree, DefaultEdge> fwsp = null;
+			// fwsp = new FloydWarshallShortestPaths<>(fg);
+			// System.out.println("\ndiameter = " + (int) fwsp.getDiameter());
 
 			System.out.println("\n\n  degree  |   number of vertices of that degree\n------------------------");
 			for (int j = 0; j < nodesOfDeg.length; ++j) {

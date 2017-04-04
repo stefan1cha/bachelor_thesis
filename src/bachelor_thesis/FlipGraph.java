@@ -94,6 +94,7 @@ public class FlipGraph extends SimpleGraph<LabeledTree, DefaultEdge> {
 
 	public void createFlipGraph(LabeledTree lt) {
 		int counter = 0;
+		int limit = 24000;
 		Stack<LabeledTree> stack = new Stack<LabeledTree>();
 		HashSet<LabeledTree> visited = new HashSet<LabeledTree>();
 
@@ -115,8 +116,17 @@ public class FlipGraph extends SimpleGraph<LabeledTree, DefaultEdge> {
 				if (!this.containsEdge(explorer, current))
 					this.addEdge(explorer, current);
 			}
-			if (counter++ > 24000)
-				System.out.println(this.vertexSet().size());
+			if (counter++ > limit) {
+				int vsize = this.vertexSet().size();
+				if (vsize > 900000)
+					limit = 10000;
+				else if (vsize > 1088650)
+					limit = 2000;
+				System.out.println(vsize + "   " + stack.size());
+				neighbors = null;
+				counter = 0;
+				System.gc();
+			}
 		}
 
 	}
