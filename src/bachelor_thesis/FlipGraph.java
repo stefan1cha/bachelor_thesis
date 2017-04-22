@@ -10,14 +10,13 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.jgrapht.GraphPath;
+import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 import org.jgrapht.alg.shortestpath.FloydWarshallShortestPaths;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.antlr.v4.runtime.misc.Pair;
 
 public class FlipGraph extends SimpleGraph<LabeledTree, DefaultEdge> {
-
-	// private int n = -1;
 
 	public FlipGraph() {
 		super(DefaultEdge.class);
@@ -113,8 +112,9 @@ public class FlipGraph extends SimpleGraph<LabeledTree, DefaultEdge> {
 					stack.push(current);
 				if (!this.containsVertex(current))
 					this.addVertex(current);
-				if (!this.containsEdge(explorer, current))
+				if (!this.containsEdge(explorer, current)) {
 					this.addEdge(explorer, current);
+				}
 			}
 			if (counter++ > limit) {
 				int vsize = this.vertexSet().size();
@@ -122,7 +122,7 @@ public class FlipGraph extends SimpleGraph<LabeledTree, DefaultEdge> {
 					limit = 10000;
 				else if (vsize > 1088650)
 					limit = 2000;
-				System.out.println(vsize + "   " + stack.size());
+				// System.out.println(vsize);
 				neighbors = null;
 				counter = 0;
 				System.gc();
@@ -276,7 +276,133 @@ public class FlipGraph extends SimpleGraph<LabeledTree, DefaultEdge> {
 	}
 
 	public int getDiameter() {
-		return 0;
+		FloydWarshallShortestPaths<LabeledTree, DefaultEdge> fw = new FloydWarshallShortestPaths<>(this);
+		return (int) fw.getDiameter();
+	}
+
+	public int getDiameterRandomized(int trials) {
+		DijkstraShortestPath<LabeledTree, DefaultEdge> dsp = new DijkstraShortestPath<>(this);
+		LabeledTree source;
+		LabeledTree target;
+		int max = 0;
+		double winningProbability = (trials * 1.0) / this.vertexSet().size();
+
+		HashSet<TwoTrees> pairs = this.getDistinctPairs();
+		Iterator<TwoTrees> iterator = pairs.iterator();
+		while (iterator.hasNext()) {
+			if (throwDie(winningProbability)) {
+				TwoTrees current = iterator.next();
+				source = current.getFirst();
+				target = current.getSecond();
+				int pathLength = (int) dsp.getPathWeight(source, target);
+				if (pathLength > max) {
+					max = pathLength;
+					System.out.println("source:" + source.getPruferCode());
+					System.out.println("target: " + target.getPruferCode());
+					System.out.println("path length: " + pathLength);
+					System.out.println("\n");
+				}
+			} else
+				iterator.next();
+		}
+
+		return max;
+	}
+
+	private boolean throwDie(double winningProbability) {
+		double value = Math.random();
+		if (value < winningProbability)
+			return true;
+		else
+			return false;
+	}
+
+	public int getDiameterParallel(int numberOfThreads) {
+
+		if (numberOfThreads < 1)
+			throw new IllegalArgumentException();
+
+		int numberOfFlipNodes = this.vertexSet().size();
+		int flipNodesPerThread = numberOfFlipNodes / numberOfThreads;
+		DiameterThread[] threads = new DiameterThread[numberOfThreads];
+
+		// TODO Create a set S of distinct sets s_1,...,s_k where each set s_i
+		// has exactly 2 flip nodes (private HashSet<HashSet<LabeledTree>>
+		// distinctPairs()). Create an array of threads. Give each
+		// thread some sets s_i. Then compute the shortest paths (in parallel).
+		// Then you get the diameter
+
+		// Create threads
+		System.out.println("Create all threads");
+		for (int i = 0; i < numberOfThreads; ++i) {
+			threads[i] = new DiameterThread(this);
+		}
+
+		// Distribute the nodes to the threads
+		System.out.println("Disitribute tasks");
+		Iterator<TwoTrees> iterator = this.getDistinctPairs().iterator();
+		int counter = 0;
+		int currentThread = 0;
+
+		while (iterator.hasNext() && counter++ < flipNodesPerThread && currentThread < numberOfThreads - 1) {
+			// System.out.println("thread " + currentThread + ": counter = " +
+			// counter);
+			threads[currentThread].add(iterator.next());
+			if (counter >= flipNodesPerThread) {
+				counter = 0;
+				currentThread++;
+			}
+		}
+		while (iterator.hasNext())
+			threads[numberOfThreads - 1].add(iterator.next());
+
+		// Start the threads
+		System.out.println("Starting all threads");
+		for (int i = 0; i < numberOfThreads; ++i) {
+			threads[i].start();
+			try {
+				threads[i].join();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+
+		System.out.println("All threads have been started");
+
+		int max = 0;
+		for (int i = 0; i < numberOfThreads; ++i) {
+			// System.out.println(threads[i].getMax());
+			if (threads[i].getMax() > max)
+				max = threads[i].getMax();
+		}
+
+		return max;
+	}
+
+	private HashSet<TwoTrees> getDistinctPairs() {
+
+		HashSet<TwoTrees> result = new HashSet<TwoTrees>();
+
+		Iterator<LabeledTree> outerIterator = this.vertexSet().iterator();
+
+		while (outerIterator.hasNext()) {
+			Iterator<LabeledTree> innerIterator = this.vertexSet().iterator();
+			LabeledTree current = outerIterator.next();
+
+			while (innerIterator.hasNext()) {
+				TwoTrees newSet = new TwoTrees(current, innerIterator.next());
+				if (newSet.distinctTrees())
+					result.add(newSet);
+			}
+		}
+
+		return result;
+	}
+
+	public int getPathLength(LabeledTree source, LabeledTree target) {
+
+		throw new RuntimeException("metoda nu a fost implementata");
+
 	}
 
 	/**

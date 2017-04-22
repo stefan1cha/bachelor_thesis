@@ -64,15 +64,12 @@ public class PruferCode {
 
 		PruferCode other = (PruferCode) obj;
 
-		Iterator<Integer> iterator = this.code.iterator();
-		while (iterator.hasNext())
-			if (!other.has(iterator.next()))
+		Iterator<Integer> iterator1 = this.code.iterator();
+		Iterator<Integer> iterator2 = other.code.iterator();
+		while (iterator1.hasNext() && iterator2.hasNext()) {
+			if (iterator1.next() != iterator2.next())
 				return false;
-
-		iterator = other.code.iterator();
-		while (iterator.hasNext())
-			if (!this.has(iterator.next()))
-				return false;
+		}
 
 		return true;
 	}
@@ -94,7 +91,6 @@ public class PruferCode {
 
 		ArrayList<Integer> sequence = new ArrayList<Integer>(code);
 
-		// System.out.println("\n\n\ninput:" + sequence);
 
 		int[] list = new int[n + 1];
 		for (int i = 0; i < n + 1; i++)
@@ -106,21 +102,12 @@ public class PruferCode {
 			// find smallest element in the list that is not in the sequence
 			for (int i = 0; i < n; i++)
 				if (list[i] > -1 && !sequence.contains(list[i])) {
-					// System.out.println("\n");
-					// System.out.println("current = " + current + ", list[" + i
-					// + "] = " + list[i]);
-					// System.out.println(Arrays.toString(list));
-					// System.out.println(sequence);
 					++labels[Math.abs(current - i)];
 					iterator.remove();
 					list[i] = -1;
 					break;
 				}
 		}
-
-		// System.out.println("\n\n");
-		// System.out.println(Arrays.toString(list));
-		// System.out.println(sequence);
 		int a = -1;
 		int b = -1;
 
@@ -130,9 +117,7 @@ public class PruferCode {
 			else if (list[i] != -1)
 				a = i;
 		}
-
-		// System.out.println("a = " + a + ", b = " + b);
-
+		
 		++labels[Math.abs(a - b)];
 
 		for (int i = 1; i < labels.length; ++i)
@@ -154,12 +139,4 @@ public class PruferCode {
 		return this.hash; // % 100;
 	}
 
-	private boolean has(int x) {
-		Iterator<Integer> iterator = this.code.iterator();
-		while (iterator.hasNext()) {
-			if (iterator.next() == x)
-				return true;
-		}
-		return false;
-	}
 }

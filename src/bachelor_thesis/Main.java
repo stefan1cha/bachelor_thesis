@@ -1,19 +1,57 @@
 package bachelor_thesis;
 
 import org.jgrapht.Graph;
+import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 import org.jgrapht.alg.shortestpath.FloydWarshallShortestPaths;
 import org.jgrapht.graph.DefaultEdge;
 
 import java.text.DecimalFormat;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 
+@SuppressWarnings("unused")
 public class Main {
 
 	public static void main(String[] args) {
 
-		getStats(12, 12);
+		int diameter;
+		long start;
+		long end;
+		
+		start = System.nanoTime();
+		FlipGraph fg = new FlipGraph(10);
+		end = System.nanoTime();
+		System.out.println("ELAPSED TIME: " + ((end * 1.0 - start) / 1000000000L));
+
+		System.out.println(fg.vertexSet().size());
+
+		/*
+		 * System.out.println(
+		 * "\n\n\n\n----------------------------------------\nNormal\n----------------------------------------"
+		 * ); start = System.nanoTime(); diameter = fg.getDiameter(); end =
+		 * System.nanoTime(); System.out.println("ELAPSED TIME: " + ((end * 1.0
+		 * - start) / 1000000000L)); System.out.println("Diameter is " +
+		 * diameter);
+		 * 
+		 * 
+		 * /*System.out.println(
+		 * "\n\n\n\n----------------------------------------\nRandomized\n----------------------------------------"
+		 * ); start = System.nanoTime(); diameter =
+		 * fg.getDiameterRandomized(333); end = System.nanoTime();
+		 * System.out.println("ELAPSED TIME: " + ((end * 1.0 - start) /
+		 * 1000000000L)); System.out.println("Diameter is " + diameter);
+		 * 
+		 * 
+		 * System.out.println(
+		 * "\n\n\n\n----------------------------------------\nParallel\n----------------------------------------"
+		 * ); start = System.nanoTime(); diameter = fg.getDiameterParallel(3);
+		 * end = System.nanoTime(); System.out.println("ELAPSED TIME: " + ((end
+		 * * 1.0 - start) / 1000000000L)); System.out.println("Diameter is " +
+		 * diameter);
+		 */
 
 	}
 

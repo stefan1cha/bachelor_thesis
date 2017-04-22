@@ -1,6 +1,8 @@
 package bachelor_thesis;
 
+import java.awt.Label;
 import java.util.ArrayList;
+
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -17,7 +19,7 @@ import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.SimpleWeightedGraph;
 
 public class LabeledTree extends SimpleWeightedGraph<Integer, DefaultWeightedEdge> {
-	
+
 	private int id = -1;
 
 	/**
@@ -99,11 +101,11 @@ public class LabeledTree extends SimpleWeightedGraph<Integer, DefaultWeightedEdg
 			this.labelEdges();
 
 	}
-	
+
 	public void setId(int arg) {
 		this.id = arg;
 	}
-	
+
 	public int getId() {
 		return this.id;
 	}
@@ -159,8 +161,7 @@ public class LabeledTree extends SimpleWeightedGraph<Integer, DefaultWeightedEdg
 		}
 		this.addEdgeAndVertices(u, v);
 	}
-	
-	
+
 	/**
 	 * A basic constructor.
 	 */
@@ -277,7 +278,6 @@ public class LabeledTree extends SimpleWeightedGraph<Integer, DefaultWeightedEdg
 
 		int[] result = new int[n - 2];
 
-
 		LabeledTree treeCopy = (LabeledTree) this.clone();
 
 		for (int i = 0; i < n - 2; ++i) {
@@ -290,6 +290,8 @@ public class LabeledTree extends SimpleWeightedGraph<Integer, DefaultWeightedEdg
 			}
 		}
 		this.pfCode = new PruferCode(result);
+		vertexList = null;
+		treeCopy = null;
 		return this.pfCode;
 	}
 
@@ -427,12 +429,12 @@ public class LabeledTree extends SimpleWeightedGraph<Integer, DefaultWeightedEdg
 		}
 		result.remove(this);
 		return result;
-	}
-	
+	}	
 
 	private boolean isLeaf(int vertex) {
 		return this.degreeOf(vertex) == 1;
 	}
+	
 
 	/**
 	 * Two graphs are equal if they have equal vertex set and equal edge set
@@ -445,31 +447,23 @@ public class LabeledTree extends SimpleWeightedGraph<Integer, DefaultWeightedEdg
 	 * @return Returns true if 'this' and 'other' are equal graphs AND are of
 	 *         the same type.
 	 */
-	public boolean equals(Object other) {
+	/*public boolean equals(Object other) {
 		if (other.getClass() != this.getClass()) {
 			throw new RuntimeException("Debugging");
-			// return false;
 		} else {
 			LabeledTree lt = (LabeledTree) other;
 			for (Integer v : this.vertexSet())
 				if (!lt.vertexSet().contains(v)) {
-					// System.out.println("\n\n" + this + "\n" + other +
-					// "\nfalse");
 					return false;
 				}
 			for (Integer v : lt.vertexSet())
 				if (!this.vertexSet().contains(v)) {
-					// System.out.println("\n\n" + this + "\n" + other +
-					// "\nfalse");
 					return false;
 				}
 			for (DefaultWeightedEdge e : this.edgeSet()) {
 				int u = this.getEdgeSource(e);
 				int v = this.getEdgeTarget(e);
 				if (!lt.containsEdge(u, v)) {
-					// System.out.println("\n\n" + this + "\n" + other +
-					// "\nfalse");
-
 					return false;
 				}
 			}
@@ -477,21 +471,20 @@ public class LabeledTree extends SimpleWeightedGraph<Integer, DefaultWeightedEdg
 				int u = lt.getEdgeSource(e);
 				int v = lt.getEdgeTarget(e);
 				if (!this.containsEdge(u, v)) {
-					// System.out.println("\n\n" + this + "\n" + other +
-					// "\nfalse");
 					return false;
 				}
 			}
 		}
-		// System.out.println("\n\n" + this + "\n" + other + "\ntrue");
 		return true;
+	}*/
+	
+	public boolean equals(Object other) {
+		LabeledTree otherTree = (LabeledTree) other;
+		return this.getPruferCode().equals(otherTree.getPruferCode());
 	}
 
 	public int hashCode() {
-		
-		//return -1;
 		return this.getPruferCode().hashCode();
-
 	}
 
 	/**
@@ -709,71 +702,75 @@ public class LabeledTree extends SimpleWeightedGraph<Integer, DefaultWeightedEdg
 		}
 		return canonicalPath;
 	}
-	
+
+	public static LabeledTree canonicalStar(int n) {
+		int[] code = new int[n - 2];
+		for (int i = 0; i < n - 2; ++i) {
+			code[i] = 0;
+		}
+		return new LabeledTree(new PruferCode(code), true);
+	}
+
 	@Override
 	public boolean addVertex(Integer v) {
 		pfCode = null;
 		return super.addVertex(v);
 	}
-	
+
 	@Override
 	public DefaultWeightedEdge addEdge(Integer arg0, Integer arg1) {
 		pfCode = null;
 		return super.addEdge(arg0, arg1);
 	}
-	
+
 	@Override
 	public boolean addEdge(Integer sourceVertex, Integer targetVertex, DefaultWeightedEdge e) {
 		pfCode = null;
 		return super.addEdge(sourceVertex, targetVertex, e);
 	}
-	
-	
+
 	@Override
 	public boolean removeAllEdges(Collection<? extends DefaultWeightedEdge> arg0) {
 		pfCode = null;
 		return super.removeAllEdges(arg0);
 	}
-	
+
 	@Override
 	public Set<DefaultWeightedEdge> removeAllEdges(Integer sourceVertex, Integer targetVertex) {
 		pfCode = null;
 		return super.removeAllEdges(sourceVertex, targetVertex);
 	}
-	
+
 	@Override
 	public boolean removeAllVertices(Collection<? extends Integer> arg0) {
 		pfCode = null;
 		return super.removeAllVertices(arg0);
 	}
-	
+
 	@Override
 	public boolean removeEdge(DefaultWeightedEdge e) {
 		pfCode = null;
 		return super.removeEdge(e);
 	}
-	
+
 	@Override
 	public DefaultWeightedEdge removeEdge(Integer sourceVertex, Integer targetVertex) {
 		pfCode = null;
 		return super.removeEdge(sourceVertex, targetVertex);
 	}
-	
+
 	@Override
 	public boolean removeVertex(Integer arg0) {
 		pfCode = null;
 		return super.removeVertex(arg0);
 	}
-	
+
 	@Override
 	protected boolean removeAllEdges(DefaultWeightedEdge[] arg0) {
 		pfCode = null;
 		return super.removeAllEdges(arg0);
 	}
 
-	
-	
-	
 	/**
 	 * This 'serialVersionUID' variable is here just to avoid a warning.
 	 */
