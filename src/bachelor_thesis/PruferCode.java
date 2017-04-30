@@ -130,10 +130,13 @@ public class PruferCode {
 	public int hashCode() {
 		if (hash == -1) {
 			hash = 0;
+			//int counter = 0;
 			Iterator<Integer> iterator = code.iterator();
 			while (iterator.hasNext()) {
-				hash += iterator.next();
+				//if (++counter > 9)
+					//hash *= 10;
 				hash *= 10;
+				hash += iterator.next();
 			}
 		}
 		return this.hash; // % 100;

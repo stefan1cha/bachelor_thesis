@@ -17,41 +17,23 @@ public class Main {
 
 	public static void main(String[] args) {
 
-		int diameter;
 		long start;
 		long end;
+
 		
 		start = System.nanoTime();
-		FlipGraph fg = new FlipGraph(10);
+		FlipGraph fg = new FlipGraph(5);
 		end = System.nanoTime();
-		System.out.println("ELAPSED TIME: " + ((end * 1.0 - start) / 1000000000L));
-
+		System.out.println((end - start * 1.0) / 1_000_000_000l);
+		
 		System.out.println(fg.vertexSet().size());
+		
+		start = System.nanoTime();
+		DFSFlipGraph mstfg = new DFSFlipGraph(5);
+		end = System.nanoTime();
+		System.out.println((end - start * 1.0) / 1_000_000_000l);
 
-		/*
-		 * System.out.println(
-		 * "\n\n\n\n----------------------------------------\nNormal\n----------------------------------------"
-		 * ); start = System.nanoTime(); diameter = fg.getDiameter(); end =
-		 * System.nanoTime(); System.out.println("ELAPSED TIME: " + ((end * 1.0
-		 * - start) / 1000000000L)); System.out.println("Diameter is " +
-		 * diameter);
-		 * 
-		 * 
-		 * /*System.out.println(
-		 * "\n\n\n\n----------------------------------------\nRandomized\n----------------------------------------"
-		 * ); start = System.nanoTime(); diameter =
-		 * fg.getDiameterRandomized(333); end = System.nanoTime();
-		 * System.out.println("ELAPSED TIME: " + ((end * 1.0 - start) /
-		 * 1000000000L)); System.out.println("Diameter is " + diameter);
-		 * 
-		 * 
-		 * System.out.println(
-		 * "\n\n\n\n----------------------------------------\nParallel\n----------------------------------------"
-		 * ); start = System.nanoTime(); diameter = fg.getDiameterParallel(3);
-		 * end = System.nanoTime(); System.out.println("ELAPSED TIME: " + ((end
-		 * * 1.0 - start) / 1000000000L)); System.out.println("Diameter is " +
-		 * diameter);
-		 */
+		System.out.println("\n\n\n\nnumber of vertices = " + mstfg.getVertexSet().size());
 
 	}
 

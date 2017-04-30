@@ -92,6 +92,10 @@ public class FlipGraph extends SimpleGraph<LabeledTree, DefaultEdge> {
 	}
 
 	public void createFlipGraph(LabeledTree lt) {
+		
+		// TODO incearca sa scapi de 'visited'
+		// E cumva redundant?
+		
 		int counter = 0;
 		int limit = 24000;
 		Stack<LabeledTree> stack = new Stack<LabeledTree>();
@@ -116,17 +120,61 @@ public class FlipGraph extends SimpleGraph<LabeledTree, DefaultEdge> {
 					this.addEdge(explorer, current);
 				}
 			}
+
 			if (counter++ > limit) {
 				int vsize = this.vertexSet().size();
 				if (vsize > 900000)
 					limit = 10000;
 				else if (vsize > 1088650)
 					limit = 2000;
-				// System.out.println(vsize);
+				System.out.println("#vertices:" + vsize + "    #edges:" + this.edgeSet().size() + "\n");
 				neighbors = null;
 				counter = 0;
 				System.gc();
 			}
+
+		}
+
+	}
+	
+	public void createFlipGraphAux(LabeledTree lt) {
+		//int counter = 0;
+		//int limit = 24000;
+		Stack<LabeledTree> stack = new Stack<LabeledTree>();
+		HashSet<LabeledTree> visited = new HashSet<LabeledTree>();
+
+		stack.push(lt);
+		while (!stack.isEmpty()) {
+			LabeledTree explorer = stack.pop();
+			this.addVertex(explorer);
+			visited.add(explorer);
+
+			Set<LabeledTree> neighbors = explorer.getFlipTreesAux();
+
+			Iterator<LabeledTree> iterator = neighbors.iterator();
+			while (iterator.hasNext()) {
+				LabeledTree current = iterator.next();
+				if (!visited.contains(current))
+					stack.push(current);
+				if (!this.containsVertex(current))
+					this.addVertex(current);
+				if (!this.containsEdge(explorer, current)) {
+					this.addEdge(explorer, current);
+				}
+			}
+
+			/*if (counter++ > limit) {
+				int vsize = this.vertexSet().size();
+				if (vsize > 900000)
+					limit = 10000;
+				else if (vsize > 1088650)
+					limit = 2000;
+				System.out.println("#vertices:" + vsize + "    #edges:" + this.edgeSet().size() + "\n");
+				neighbors = null;
+				counter = 0;
+				System.gc();
+			}*/
+
 		}
 
 	}

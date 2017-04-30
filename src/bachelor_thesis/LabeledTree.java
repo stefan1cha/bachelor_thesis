@@ -1,6 +1,5 @@
 package bachelor_thesis;
 
-import java.awt.Label;
 import java.util.ArrayList;
 
 import java.util.Arrays;
