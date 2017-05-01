@@ -20,21 +20,18 @@ public class Main {
 		long start;
 		long end;
 
-		
-		start = System.nanoTime();
-		FlipGraph fg = new FlipGraph(5);
-		end = System.nanoTime();
-		System.out.println((end - start * 1.0) / 1_000_000_000l);
-		
-		System.out.println(fg.vertexSet().size());
-		
-		start = System.nanoTime();
-		DFSFlipGraph mstfg = new DFSFlipGraph(5);
-		end = System.nanoTime();
-		System.out.println((end - start * 1.0) / 1_000_000_000l);
+		int n = 9;
+		int deg = 19;
 
-		System.out.println("\n\n\n\nnumber of vertices = " + mstfg.getVertexSet().size());
+		FlipGraph fg = new FlipGraph(n);
+		Iterator<LabeledTree> iterator = fg.vertexSet().iterator();
+		while (iterator.hasNext()) {
+			LabeledTree current = iterator.next();
+			if (fg.degreeOf(current) == deg)
+				System.out.println(current);
+		}
 
+		System.out.println("done");
 	}
 
 	public static void getStats(int start, int n) {

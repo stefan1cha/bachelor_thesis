@@ -1,30 +1,31 @@
 package bachelor_thesis;
 
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.Set;
-import java.util.Stack;
+import java.util.Queue;
 
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.SimpleGraph;
 
-public class DFSFlipGraph extends SimpleGraph<LabeledTree, DefaultEdge>{
+public class BFSFlipGraph extends SimpleGraph<LabeledTree, DefaultEdge>{
 
 	//private HashSet<LabeledTree> vertexSet;
 
 
 	private static final long serialVersionUID = 1L;
 
-	public DFSFlipGraph(int n) {		
+	public BFSFlipGraph(int n) {		
 		super(DefaultEdge.class);
 		
 		int counter = 0;
 		int limit = 100_000;
 		
-		Stack<LabeledTree> stack = new Stack<LabeledTree>();
-
-		stack.push(LabeledTree.canonicalPath(n));
-		while (!stack.isEmpty()) {
-			LabeledTree explorer = stack.pop();
+		Queue<LabeledTree> queue = new LinkedList<LabeledTree>();
+		
+		queue.add(LabeledTree.canonicalPath(n));
+		while (!queue.isEmpty()) {
+			LabeledTree explorer = queue.remove();
 			this.addVertex(explorer);
 
 			Set<LabeledTree> neighbors = explorer.getFlipTrees();
@@ -33,7 +34,7 @@ public class DFSFlipGraph extends SimpleGraph<LabeledTree, DefaultEdge>{
 			while (iterator.hasNext()) {
 				LabeledTree current = iterator.next();
 				if (!this.containsVertex(current))
-					stack.push(current);
+					queue.add(current);
 				this.addVertex(current);
 				counter++;
 				if (counter > limit) {
@@ -43,6 +44,10 @@ public class DFSFlipGraph extends SimpleGraph<LabeledTree, DefaultEdge>{
 			}
 		}
 	}
+
+	/*public HashSet<LabeledTree> getVertexSet() {
+		return this.vertexSet;
+	}*/
 
 	@Override
 	public String toString() {

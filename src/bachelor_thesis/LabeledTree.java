@@ -43,7 +43,7 @@ public class LabeledTree extends SimpleWeightedGraph<Integer, DefaultWeightedEdg
 	 * @param labeled
 	 *            If set to true, the edges will be labeled.
 	 */
-	public LabeledTree(PruferCode pfc, boolean labeled) {
+	public LabeledTree(PruferCode pfc) {
 
 		super(DefaultWeightedEdge.class);
 
@@ -95,10 +95,6 @@ public class LabeledTree extends SimpleWeightedGraph<Integer, DefaultWeightedEdg
 			}
 		}
 		this.addEdgeAndVertices(u, v);
-
-		if (labeled)
-			this.labelEdges();
-
 	}
 
 	public void setId(int arg) {
@@ -202,6 +198,7 @@ public class LabeledTree extends SimpleWeightedGraph<Integer, DefaultWeightedEdg
 	 * Labels the edges of the graph with the absolute difference of the labels
 	 * of their end-vertices.
 	 */
+	@SuppressWarnings("unused")
 	private void labelEdges() {
 		for (DefaultWeightedEdge e : this.edgeSet()) {
 			int v = this.getEdgeSource(e);
@@ -325,7 +322,7 @@ public class LabeledTree extends SimpleWeightedGraph<Integer, DefaultWeightedEdg
 	 * 
 	 * @return The set of flip trees.
 	 */
-	public Set<LabeledTree> getFlipTrees() {
+	public Set<LabeledTree> getFlipTreesDeprecated() {
 		Set<LabeledTree> flipTrees = new HashSet<LabeledTree>();
 		for (DefaultWeightedEdge e : this.edgeSet()) {
 			// create copy of tree
@@ -367,7 +364,7 @@ public class LabeledTree extends SimpleWeightedGraph<Integer, DefaultWeightedEdg
 		return flipTrees;
 	}
 
-	public Set<LabeledTree> getFlipTreesAux() {
+	public Set<LabeledTree> getFlipTrees() {
 
 		Set<LabeledTree> result = new HashSet<LabeledTree>();
 
@@ -707,7 +704,7 @@ public class LabeledTree extends SimpleWeightedGraph<Integer, DefaultWeightedEdg
 		for (int i = 0; i < n - 2; ++i) {
 			code[i] = 0;
 		}
-		return new LabeledTree(new PruferCode(code), true);
+		return new LabeledTree(new PruferCode(code));
 	}
 
 	@Override
@@ -770,6 +767,17 @@ public class LabeledTree extends SimpleWeightedGraph<Integer, DefaultWeightedEdg
 		return super.removeAllEdges(arg0);
 	}
 
+	public boolean hasAllDegsLessEqThan(int deg) {
+		Iterator<Integer> iterator = this.vertexSet().iterator();
+		while (iterator.hasNext()) {
+			int current = iterator.next();
+			if (this.degreeOf(current) > deg)
+				return false;
+		}
+		
+		return true;
+	}
+	
 	/**
 	 * This 'serialVersionUID' variable is here just to avoid a warning.
 	 */
