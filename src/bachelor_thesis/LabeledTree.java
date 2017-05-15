@@ -19,7 +19,7 @@ import org.jgrapht.graph.SimpleWeightedGraph;
 
 public class LabeledTree extends SimpleWeightedGraph<Integer, DefaultWeightedEdge> {
 
-	private int id = -1;
+	public int depth = 0;
 
 	/**
 	 * Stores the prufer code (if it has been already given or computed before).
@@ -95,14 +95,6 @@ public class LabeledTree extends SimpleWeightedGraph<Integer, DefaultWeightedEdg
 			}
 		}
 		this.addEdgeAndVertices(u, v);
-	}
-
-	public void setId(int arg) {
-		this.id = arg;
-	}
-
-	public int getId() {
-		return this.id;
 	}
 
 	public LabeledTree(List<Integer> originalSequence) {
@@ -425,12 +417,11 @@ public class LabeledTree extends SimpleWeightedGraph<Integer, DefaultWeightedEdg
 		}
 		result.remove(this);
 		return result;
-	}	
+	}
 
 	private boolean isLeaf(int vertex) {
 		return this.degreeOf(vertex) == 1;
 	}
-	
 
 	/**
 	 * Two graphs are equal if they have equal vertex set and equal edge set
@@ -443,37 +434,19 @@ public class LabeledTree extends SimpleWeightedGraph<Integer, DefaultWeightedEdg
 	 * @return Returns true if 'this' and 'other' are equal graphs AND are of
 	 *         the same type.
 	 */
-	/*public boolean equals(Object other) {
-		if (other.getClass() != this.getClass()) {
-			throw new RuntimeException("Debugging");
-		} else {
-			LabeledTree lt = (LabeledTree) other;
-			for (Integer v : this.vertexSet())
-				if (!lt.vertexSet().contains(v)) {
-					return false;
-				}
-			for (Integer v : lt.vertexSet())
-				if (!this.vertexSet().contains(v)) {
-					return false;
-				}
-			for (DefaultWeightedEdge e : this.edgeSet()) {
-				int u = this.getEdgeSource(e);
-				int v = this.getEdgeTarget(e);
-				if (!lt.containsEdge(u, v)) {
-					return false;
-				}
-			}
-			for (DefaultWeightedEdge e : lt.edgeSet()) {
-				int u = lt.getEdgeSource(e);
-				int v = lt.getEdgeTarget(e);
-				if (!this.containsEdge(u, v)) {
-					return false;
-				}
-			}
-		}
-		return true;
-	}*/
-	
+	/*
+	 * public boolean equals(Object other) { if (other.getClass() !=
+	 * this.getClass()) { throw new RuntimeException("Debugging"); } else {
+	 * LabeledTree lt = (LabeledTree) other; for (Integer v : this.vertexSet())
+	 * if (!lt.vertexSet().contains(v)) { return false; } for (Integer v :
+	 * lt.vertexSet()) if (!this.vertexSet().contains(v)) { return false; } for
+	 * (DefaultWeightedEdge e : this.edgeSet()) { int u = this.getEdgeSource(e);
+	 * int v = this.getEdgeTarget(e); if (!lt.containsEdge(u, v)) { return
+	 * false; } } for (DefaultWeightedEdge e : lt.edgeSet()) { int u =
+	 * lt.getEdgeSource(e); int v = lt.getEdgeTarget(e); if
+	 * (!this.containsEdge(u, v)) { return false; } } } return true; }
+	 */
+
 	public boolean equals(Object other) {
 		LabeledTree otherTree = (LabeledTree) other;
 		return this.getPruferCode().equals(otherTree.getPruferCode());
@@ -707,6 +680,49 @@ public class LabeledTree extends SimpleWeightedGraph<Integer, DefaultWeightedEdg
 		return new LabeledTree(new PruferCode(code));
 	}
 
+	public static LabeledTree canonicalCaterpillar(int n) {
+		if (n < 4)
+			return LabeledTree.canonicalPath(n);
+		else {
+			LabeledTree lt = new LabeledTree();
+			int max = n - 1;
+			int min = 0;
+			boolean flip = false;
+			for (int i = 0; i < n - (n % 3); i += 3) {
+				if (flip) {
+					lt.addVertex(max--);
+					lt.addVertex(min++);
+					lt.addVertex(min++);
+					lt.addEdge(max + 1, min - 3);
+					lt.addEdge(max + 1, min - 2);
+					lt.addEdge(max + 1, min - 1);
+					flip = !flip;
+				} else {
+					lt.addVertex(min++);
+					lt.addVertex(max--);
+					lt.addVertex(max--);
+					if (i > 0)
+						lt.addEdge(min - 1, max + 3);
+					lt.addEdge(min - 1, max + 2);
+					lt.addEdge(min - 1, max + 1);
+					flip = !flip;
+				}
+			}
+			if (n % 3 == 1) {
+				lt.addVertex(min);
+				lt.addEdge(min, min+1);
+			}
+			if (n%3 == 2) {
+				lt.addVertex(max--);
+				lt.addVertex(max);
+				lt.addEdge(max, max+1);
+				lt.addEdge(max+1, min-1);
+			}
+			
+			return lt;
+		}
+	}
+
 	@Override
 	public boolean addVertex(Integer v) {
 		pfCode = null;
@@ -774,10 +790,19 @@ public class LabeledTree extends SimpleWeightedGraph<Integer, DefaultWeightedEdg
 			if (this.degreeOf(current) > deg)
 				return false;
 		}
-		
 		return true;
 	}
-	
+
+	public int countWithDegN(int deg) {
+		int counter = 0;
+		Iterator<Integer> iterator = this.vertexSet().iterator();
+		while (iterator.hasNext()) {
+			if (this.degreeOf(iterator.next()) == deg)
+				++counter;
+		}
+		return counter;
+	}
+
 	/**
 	 * This 'serialVersionUID' variable is here just to avoid a warning.
 	 */

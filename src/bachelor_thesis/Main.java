@@ -1,15 +1,20 @@
 package bachelor_thesis;
 
 import org.jgrapht.Graph;
+import org.jgrapht.GraphPath;
+import org.jgrapht.GraphTests;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 import org.jgrapht.alg.shortestpath.FloydWarshallShortestPaths;
 import org.jgrapht.graph.DefaultEdge;
+import org.jgrapht.graph.DefaultWeightedEdge;
+import org.jgrapht.traverse.DepthFirstIterator;
 
 import java.text.DecimalFormat;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 @SuppressWarnings("unused")
@@ -17,21 +22,74 @@ public class Main {
 
 	public static void main(String[] args) {
 
-		long start;
-		long end;
+		for (int n = 10; n < 9; n++) {
+			FlipGraph fg = new FlipGraph(n);
+			DFSFlipGraph dfg = new DFSFlipGraph(n);
+			BFSFlipGraph bfg = new BFSFlipGraph(n);
 
-		int n = 9;
-		int deg = 19;
+			System.out.println("__________________________________________________________________________");
 
+			System.out.println("n = " + n);
+
+			System.out.println("FG diameter = " + fg.getDiameter());
+			System.out.println(
+					"DFS diameter in interval [" + ((int) (0.5 * dfg.getDiameter())) + "," + dfg.getDepth() + "]");
+			System.out.println(
+					"BFS diameter in interval [" + ((int) (0.5 * bfg.getDiameter())) + "," + bfg.getDepth() + "]");
+		}
+
+		System.out.println("here");
+		DFSFlipGraph dfg = new DFSFlipGraph(12);
+		for (int i = 3; i < 13; i++)
+			System.out.println("a(" + i + ") = " + a(i));
+
+	}
+
+	public static LabeledTree pickRandomTree(int n) {
 		FlipGraph fg = new FlipGraph(n);
 		Iterator<LabeledTree> iterator = fg.vertexSet().iterator();
 		while (iterator.hasNext()) {
-			LabeledTree current = iterator.next();
-			if (fg.degreeOf(current) == deg)
-				System.out.println(current);
+			if (Math.random() < 0.05)
+				return iterator.next();
+			else
+				iterator.next();
 		}
+		return null;
+	}
 
-		System.out.println("done");
+	public static void doFlips(LabeledTree lt) {
+		int n = lt.vertexSet().size();
+		while (lt != null) {
+			System.out.println(lt + "  degree of " + (n - 1) + ": " + lt.degreeOf(n - 1));
+			lt = tryOneFlip(lt);
+		}
+	}
+
+	public static LabeledTree tryOneFlip(LabeledTree lt) {
+		int n = lt.vertexSet().size();
+		Iterator<LabeledTree> iterator = lt.getFlipTrees().iterator();
+		while (iterator.hasNext()) {
+			LabeledTree current = iterator.next();
+			if (current.degreeOf(n - 1) < lt.degreeOf(n - 1)) {
+				return current;
+			}
+		}
+		return null;
+	}
+
+	public static double b(int n) {
+		int s = 0;
+		if (n % 3 == 0)
+			s = (int) Math.ceil(n / 6);
+		if (n % 3 == 1)
+			s = (int) Math.ceil((n - 4) / 6);
+		if (n % 3 == 2)
+			s = (int) Math.ceil((n - 2) / 6);
+		return Math.max(Math.ceil((n - 3) / 2), 0) + s;
+	}
+
+	public static double a(int n) {
+		return Math.floor(n * n / 3.0) - n + 1;
 	}
 
 	public static void getStats(int start, int n) {

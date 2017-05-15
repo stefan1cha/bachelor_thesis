@@ -61,6 +61,7 @@ public class FlipGraph extends SimpleGraph<LabeledTree, DefaultEdge> {
 
 		//int counter = 0;
 		//int limit = 24000;
+		//int n = lt.vertexSet().size();
 		Stack<LabeledTree> stack = new Stack<LabeledTree>();
 		HashSet<LabeledTree> visited = new HashSet<LabeledTree>();
 
@@ -83,6 +84,9 @@ public class FlipGraph extends SimpleGraph<LabeledTree, DefaultEdge> {
 				}
 			}
 
+			//if (Math.random() < 0.01 * 0.1 && explorer.degreeOf(n-1)>2)
+				//System.out.println("Random flip tree: " + explorer);
+			
 			/*if (counter++ > limit) {
 				int vsize = this.vertexSet().size();
 				if (vsize > 900000)
@@ -106,9 +110,9 @@ public class FlipGraph extends SimpleGraph<LabeledTree, DefaultEdge> {
 		LabeledTree[] flipNodes = this.vertexSet().toArray(new LabeledTree[0]);
 		for (int i = 0; i < flipNodes.length; i++) {
 			if (i < 10)
-				result += "lt" + i + " : " + flipNodes[i] + "    is path: " + flipNodes[i].isPath() + "\n";
+				result += "lt" + i + " : " + flipNodes[i] + "\n";
 			else
-				result += "lt" + i + ": " + flipNodes[i] + "    is path: " + flipNodes[i].isPath() + "\n";
+				result += "lt" + i + ": " + flipNodes[i] + "\n";
 
 		}
 

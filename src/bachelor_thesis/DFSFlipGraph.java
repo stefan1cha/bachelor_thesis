@@ -6,6 +6,7 @@ import java.util.Queue;
 import java.util.Set;
 import java.util.Stack;
 
+import org.jgrapht.alg.shortestpath.FloydWarshallShortestPaths;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.SimpleGraph;
 import org.jgrapht.traverse.BreadthFirstIterator;
@@ -22,6 +23,9 @@ public class DFSFlipGraph extends SimpleGraph<LabeledTree, DefaultEdge> {
 		super(DefaultEdge.class);
 
 		Stack<LabeledTree> stack = new Stack<LabeledTree>();
+		
+		int limit = 5000;
+		int counter = 0;
 
 		stack.push(LabeledTree.canonicalPath(n));
 		while (!stack.isEmpty()) {
@@ -35,20 +39,28 @@ public class DFSFlipGraph extends SimpleGraph<LabeledTree, DefaultEdge> {
 			if (deg < minDeg)
 				minDeg = deg;
 			sum += deg;
-			
-				
 
 			Iterator<LabeledTree> iterator = neighbors.iterator();
 			while (iterator.hasNext()) {
 				LabeledTree current = iterator.next();
 				if (!this.containsVertex(current))
 					stack.push(current);
-				this.addVertex(current);
+				boolean newVertex = this.addVertex(current);
+
+				if (newVertex) {
+					this.addEdge(explorer, current);
+					current.depth = explorer.depth + 1;
+				}
 			}
+			//if (counter++ > limit) {
+			//	System.out.println(this.vertexSet().size());
+			//	counter = 0;
+			//}
 		}
-		System.out.println(maxDeg);
-		System.out.println(minDeg);
-		System.out.println((1.0 * sum)/this.vertexSet().size());
+		System.out.println("maxDeg = " + maxDeg);
+		System.out.println("minDeg = " + minDeg);
+		System.out.println("sum = " + sum);
+		// System.out.println((1.0 * sum) / this.vertexSet().size());
 	}
 
 	public DFSFlipGraph(LabeledTree lt) {
@@ -63,6 +75,12 @@ public class DFSFlipGraph extends SimpleGraph<LabeledTree, DefaultEdge> {
 			this.addVertex(explorer);
 
 			Set<LabeledTree> neighbors = explorer.getFlipTrees();
+			int deg = neighbors.size();
+			if (deg > maxDeg)
+				maxDeg = deg;
+			if (deg < minDeg)
+				minDeg = deg;
+			sum += deg;
 
 			Iterator<LabeledTree> iterator = neighbors.iterator();
 			while (iterator.hasNext()) {
@@ -77,15 +95,11 @@ public class DFSFlipGraph extends SimpleGraph<LabeledTree, DefaultEdge> {
 				}
 
 			}
-			
-			if (debugCounter < 1000) {
-				debugCounter++;
-			} else {
-				debugCounter = 0;
-				System.out.println(this.vertexSet().size());
-			}
-			
+
 		}
+		// System.out.println(maxDeg);
+		// System.out.println(minDeg);
+		// System.out.println((1.0 * sum) / this.vertexSet().size());
 	}
 
 	@Override
@@ -121,7 +135,7 @@ public class DFSFlipGraph extends SimpleGraph<LabeledTree, DefaultEdge> {
 	}
 
 	public int getDiameter() {
-				
+
 		BreadthFirstIterator<LabeledTree, DefaultEdge> iterator = new BreadthFirstIterator<>(this);
 
 		LabeledTree curr = null;
@@ -131,7 +145,7 @@ public class DFSFlipGraph extends SimpleGraph<LabeledTree, DefaultEdge> {
 		}
 
 		LabeledTree lt1 = curr;
-		
+
 		int depth = 0;
 		Queue<LabeledTree> queue = new LinkedList<LabeledTree>();
 		queue.add(lt1);
@@ -157,9 +171,22 @@ public class DFSFlipGraph extends SimpleGraph<LabeledTree, DefaultEdge> {
 				}
 			}
 		}
+
+		// System.out.println("actual diameter = " + (new
+		// FloydWarshallShortestPaths<>(this)).getDiameter());
+
 		return depth;
 	}
 
-	
+	public int getDepth() {
+		Iterator<LabeledTree> iterator = this.vertexSet().iterator();
+		int maxDepth = 0;
+		while (iterator.hasNext()) {
+			int currentDepth = iterator.next().depth;
+			if (currentDepth > maxDepth)
+				maxDepth = currentDepth;
+		}
+		return maxDepth;
+	}
 
 }
