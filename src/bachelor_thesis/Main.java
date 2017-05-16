@@ -21,28 +21,120 @@ import java.util.Set;
 public class Main {
 
 	public static void main(String[] args) {
-
-		for (int n = 10; n < 9; n++) {
-			FlipGraph fg = new FlipGraph(n);
-			DFSFlipGraph dfg = new DFSFlipGraph(n);
-			BFSFlipGraph bfg = new BFSFlipGraph(n);
-
-			System.out.println("__________________________________________________________________________");
-
-			System.out.println("n = " + n);
-
-			System.out.println("FG diameter = " + fg.getDiameter());
-			System.out.println(
-					"DFS diameter in interval [" + ((int) (0.5 * dfg.getDiameter())) + "," + dfg.getDepth() + "]");
-			System.out.println(
-					"BFS diameter in interval [" + ((int) (0.5 * bfg.getDiameter())) + "," + bfg.getDepth() + "]");
+		LabeledTree lt;
+		for (int i = 4; i <= 2; i += 4) {
+			lt = constructThatTree(i);
+			System.out.println("i = " + i + " -> " + lt.getFlipTrees().size());
+			lt.addVertex(i);
+			lt.addEdge(0, i);
+			System.out.println("i = " + (i + 1) + " -> " + lt.getFlipTrees().size());
+			lt.addVertex(i + 1);
+			lt.addEdge(0, i + 1);
+			System.out.println("i = " + (i + 2) + " -> " + lt.getFlipTrees().size());
+			lt.addVertex(i + 2);
+			lt.addEdge(0, i + 2);
+			System.out.println("*i = " + (i + 3) + " -> " + lt.getFlipTrees().size());
+			System.out.println("\n");
 		}
 
-		System.out.println("here");
-		DFSFlipGraph dfg = new DFSFlipGraph(12);
-		for (int i = 3; i < 13; i++)
-			System.out.println("a(" + i + ") = " + a(i));
+		for (int i = 4; i <= 30; ++i) {
+			lt = constructThatTree(i);
+			if (lt.vertexSet().size() % 4 == 3) {
+				System.out.println("**i = " + i + " -> " + lt.getFlipTrees().size());
+			} else {
+				System.out.println("i = " + i + " -> " + lt.getFlipTrees().size());
+			}
 
+		}
+
+		lt = new LabeledTree(new PruferCode(new int[] { 0, 0, 0, 12, 14, 16, 4, 4, 10, 0, 0, 0, 0, 0, 0 }));
+		System.out.println(lt);
+		System.out.println(lt.getFlipTrees().size());
+
+		lt = constructThatTree(16);
+		lt.removeEdge(15, 7);
+		lt.removeEdge(0, 15);
+		lt.removeVertex(15);
+		lt.removeEdge(12, 8);
+		lt.addEdge(0, 8);
+		lt.addEdge(7, 11);
+
+		System.out.println(lt);
+		System.out.println(lt.getFlipTrees().size());
+		System.err.println(GraphTests.isTree(lt));
+		System.err.println(lt.isGraceful());
+
+		System.out.println(lt = constructThatTree(20));
+		lt.removeEdge(0, 19);
+		lt.removeEdge(19, 9);
+		lt.removeVertex(19);
+		lt.removeEdge(10, 15);
+		lt.addEdge(0, 10);
+		lt.addEdge(9, 14);
+
+		System.out.println(lt);
+		System.out.println(lt.getFlipTrees().size());
+		System.err.println(GraphTests.isTree(lt));
+		System.err.println(lt.isGraceful());
+
+	}
+
+	public static LabeledTree constructThatTree(int input) {
+		LabeledTree lt = null;
+		int n = input - (input % 4);
+		if (input % 4 != 3) {
+			lt = new LabeledTree();
+			// add vertices
+			for (int i = 0; i < n; i++) {
+				lt.addVertex(i);
+			}
+
+			// add edges
+			for (int i = 1; i <= n / 4 - 1; i++)
+				lt.addEdge(0, i);
+			for (int i = n / 2 + 1; i <= n - 1; i++)
+				lt.addEdge(0, i);
+			for (int i = 0; i <= n / 4 - 1; i++)
+				lt.addEdge(n / 2 + 2 * i + 1, n / 4 + i);
+			lt.addEdge(n / 2, 3 * n / 4);
+
+			if (input % 4 == 1) {
+				lt.addVertex(input - 1);
+				lt.addEdge(0, input - 1);
+			} else if (input % 4 == 2) {
+				lt.addVertex(input - 1);
+				lt.addVertex(input - 2);
+				lt.addEdge(0, input - 1);
+
+				lt.addEdge(0, input - 2);
+			}
+		} else {
+			n += 4;
+			lt = new LabeledTree();
+			// add vertices
+			for (int i = 0; i < n; i++) {
+				lt.addVertex(i);
+			}
+
+			// add edges
+			for (int i = 1; i <= n / 4 - 1; i++)
+				lt.addEdge(0, i);
+			for (int i = n / 2 + 1; i <= n - 1; i++)
+				lt.addEdge(0, i);
+			for (int i = 0; i <= n / 4 - 1; i++)
+				lt.addEdge(n / 2 + 2 * i + 1, n / 4 + i);
+			lt.addEdge(n / 2, 3 * n / 4);
+
+			// apply corrections
+			lt.removeEdge(0, n - 1);
+			lt.removeEdge(n - 1, n / 2 - 1);
+			lt.removeVertex(n - 1);
+			lt.removeEdge(n / 2, 3 * n / 4);
+			lt.addEdge(0, n / 2);
+			lt.addEdge(n / 2 - 1, 3 * n / 4 - 1);
+
+		}
+		return lt;
 	}
 
 	public static LabeledTree pickRandomTree(int n) {
