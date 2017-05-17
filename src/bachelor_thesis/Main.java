@@ -21,61 +21,49 @@ import java.util.Set;
 public class Main {
 
 	public static void main(String[] args) {
-		LabeledTree lt;
-		for (int i = 4; i <= 2; i += 4) {
-			lt = constructThatTree(i);
-			System.out.println("i = " + i + " -> " + lt.getFlipTrees().size());
-			lt.addVertex(i);
-			lt.addEdge(0, i);
-			System.out.println("i = " + (i + 1) + " -> " + lt.getFlipTrees().size());
-			lt.addVertex(i + 1);
-			lt.addEdge(0, i + 1);
-			System.out.println("i = " + (i + 2) + " -> " + lt.getFlipTrees().size());
-			lt.addVertex(i + 2);
-			lt.addEdge(0, i + 2);
-			System.out.println("*i = " + (i + 3) + " -> " + lt.getFlipTrees().size());
-			System.out.println("\n");
-		}
+		int n = 24;
+		for (int i = 6; i < 200; ++i) {
+			if (i % 4 == 3)
+				System.err.println("i = " + i + " -> " + constructThatTree(i).getFlipTrees().size() + " vs. " + c(i));
+			else {
+				if (constructThatTree(i).getFlipTrees().size() == c(i))
+					System.out
+							.println("i = " + i + " -> " + constructThatTree(i).getFlipTrees().size() + " vs. " + c(i));
+				else
+					System.err
+							.println("i = " + i + " -> " + constructThatTree(i).getFlipTrees().size() + " vs. " + c(i));
 
-		for (int i = 4; i <= 30; ++i) {
-			lt = constructThatTree(i);
-			if (lt.vertexSet().size() % 4 == 3) {
-				System.out.println("**i = " + i + " -> " + lt.getFlipTrees().size());
-			} else {
-				System.out.println("i = " + i + " -> " + lt.getFlipTrees().size());
 			}
-
 		}
 
-		lt = new LabeledTree(new PruferCode(new int[] { 0, 0, 0, 12, 14, 16, 4, 4, 10, 0, 0, 0, 0, 0, 0 }));
+		System.out.println("\n\n\n\n\n");
+		LabeledTree lt = constructThatTree(20);
 		System.out.println(lt);
-		System.out.println(lt.getFlipTrees().size());
+		Iterator<LabeledTree> iterator = lt.getFlipTrees().iterator();
+		while (iterator.hasNext()) {
+			System.out.println(lt.getEdgeFlip(iterator.next()));
+		}
 
-		lt = constructThatTree(16);
-		lt.removeEdge(15, 7);
-		lt.removeEdge(0, 15);
-		lt.removeVertex(15);
-		lt.removeEdge(12, 8);
-		lt.addEdge(0, 8);
-		lt.addEdge(7, 11);
-
+		System.out.println("\n\n\n");
+		lt = constructThatTree(19);
 		System.out.println(lt);
-		System.out.println(lt.getFlipTrees().size());
-		System.err.println(GraphTests.isTree(lt));
-		System.err.println(lt.isGraceful());
+		iterator = lt.getFlipTrees().iterator();
+		while (iterator.hasNext()) {
+			System.out.println(lt.getEdgeFlip(iterator.next()));
+		}
 
-		System.out.println(lt = constructThatTree(20));
-		lt.removeEdge(0, 19);
-		lt.removeEdge(19, 9);
-		lt.removeVertex(19);
-		lt.removeEdge(10, 15);
-		lt.addEdge(0, 10);
-		lt.addEdge(9, 14);
+	}
 
-		System.out.println(lt);
-		System.out.println(lt.getFlipTrees().size());
-		System.err.println(GraphTests.isTree(lt));
-		System.err.println(lt.isGraceful());
+	public static int c(int n) {
+		int s = ((n - (n % 4)) / 4) + 1;
+		if (n % 4 == 0)
+			return (int) (s + Math.floorDiv(n - 8, 12));
+		else if (n % 4 == 1)
+			return (int) (s + Math.floorDiv(n - 5, 12));
+		else if (n % 4 == 2)
+			return (int) (s + Math.floorDiv(n - 2, 12));
+		else
+			return (int) (s + Math.ceil((n - 8) / 12)) + 1;
 
 	}
 
@@ -129,7 +117,9 @@ public class Main {
 			lt.removeEdge(0, n - 1);
 			lt.removeEdge(n - 1, n / 2 - 1);
 			lt.removeVertex(n - 1);
+
 			lt.removeEdge(n / 2, 3 * n / 4);
+
 			lt.addEdge(0, n / 2);
 			lt.addEdge(n / 2 - 1, 3 * n / 4 - 1);
 
