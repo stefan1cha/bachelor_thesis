@@ -21,36 +21,27 @@ import java.util.Set;
 public class Main {
 
 	public static void main(String[] args) {
-		int n = 24;
-		for (int i = 6; i < 200; ++i) {
-			if (i % 4 == 3)
-				System.err.println("i = " + i + " -> " + constructThatTree(i).getFlipTrees().size() + " vs. " + c(i));
-			else {
-				if (constructThatTree(i).getFlipTrees().size() == c(i))
-					System.out
-							.println("i = " + i + " -> " + constructThatTree(i).getFlipTrees().size() + " vs. " + c(i));
-				else
-					System.err
-							.println("i = " + i + " -> " + constructThatTree(i).getFlipTrees().size() + " vs. " + c(i));
 
-			}
+		// TODO: lazy evaluation of degree sequence
+
+		LabeledTree lt1 = LabeledTree.canonicalStar(5);
+		LabeledTree lt2 = new LabeledTree(new PruferCode(new int[] { 4, 4, 4 }));
+		LabeledTree lt3 = LabeledTree.canonicalPath(5);
+		LabeledTree lt4 = new LabeledTree(new PruferCode(new int[] { 4, 2, 0 }));
+		LabeledTree lt11 = LabeledTree.canonicalStar(5);
+
+		FlipGraph fg = new FlipGraph(5);
+		Iterator<LabeledTree> iterator = fg.vertexSet().iterator();
+		int counter = (int) (Math.random() * 0.99 * fg.vertexSet().size());
+		int i = 0;
+		LabeledTree lt = null;
+		while (iterator.hasNext() && ++i < counter) {
+			lt = iterator.next();
 		}
-
-		System.out.println("\n\n\n\n\n");
-		LabeledTree lt = constructThatTree(20);
+		
 		System.out.println(lt);
-		Iterator<LabeledTree> iterator = lt.getFlipTrees().iterator();
-		while (iterator.hasNext()) {
-			System.out.println(lt.getEdgeFlip(iterator.next()));
-		}
-
-		System.out.println("\n\n\n");
-		lt = constructThatTree(19);
-		System.out.println(lt);
-		iterator = lt.getFlipTrees().iterator();
-		while (iterator.hasNext()) {
-			System.out.println(lt.getEdgeFlip(iterator.next()));
-		}
+		
+		System.out.println(lt3.isIsomorphicTo(lt));
 
 	}
 

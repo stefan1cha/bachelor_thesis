@@ -36,7 +36,7 @@ public class FlipGraph extends SimpleGraph<LabeledTree, DefaultEdge> {
 		super(DefaultEdge.class);
 		if (n < 0)
 			throw new IllegalArgumentException();
-		LabeledTree lt = new LabeledTree();
+		/*LabeledTree lt = new LabeledTree();
 		int min = 0;
 		int max = n;
 
@@ -51,7 +51,8 @@ public class FlipGraph extends SimpleGraph<LabeledTree, DefaultEdge> {
 				lt.addVertex(max);
 				lt.addEdge(min, max);
 			}
-		}
+		}*/
+		LabeledTree lt = LabeledTree.canonicalPath(n);
 
 		this.createFlipGraph(lt);
 	}

@@ -10,7 +10,6 @@ import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.SimpleDirectedGraph;
 
 public class DiFlipGraph extends SimpleDirectedGraph<LabeledTree, DefaultEdge> {
-
 	private static final long serialVersionUID = 1L;
 	public static final int DECREASE_EDGE_SUM = 1;
 	public static final int DECREASE_DIAMETER = 2;
@@ -77,8 +76,6 @@ public class DiFlipGraph extends SimpleDirectedGraph<LabeledTree, DefaultEdge> {
 				DefaultWeightedEdge e = vIterator.next();
 				vSum += v.getEdgeSource(e) + v.getEdgeTarget(e);
 			}
-
-			//System.err.println("\n\n" + u + "\n" + v + "\n" + uSum + "  ,  " + vSum);
 
 			if (uSum > vSum)
 				return FORWARD;
