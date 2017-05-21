@@ -14,6 +14,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
@@ -22,26 +23,36 @@ public class Main {
 
 	public static void main(String[] args) {
 
-		// TODO: lazy evaluation of degree sequence
+		FlipGraph fg = new FlipGraph(6);
+		LinkedList<LabeledTree> classes = new LinkedList<LabeledTree>();
+		boolean newClass = true;
 
-		LabeledTree lt1 = LabeledTree.canonicalStar(5);
-		LabeledTree lt2 = new LabeledTree(new PruferCode(new int[] { 4, 4, 4 }));
-		LabeledTree lt3 = LabeledTree.canonicalPath(5);
-		LabeledTree lt4 = new LabeledTree(new PruferCode(new int[] { 4, 2, 0 }));
-		LabeledTree lt11 = LabeledTree.canonicalStar(5);
-
-		FlipGraph fg = new FlipGraph(5);
+		Iterator<LabeledTree> classIterator;
 		Iterator<LabeledTree> iterator = fg.vertexSet().iterator();
-		int counter = (int) (Math.random() * 0.99 * fg.vertexSet().size());
-		int i = 0;
-		LabeledTree lt = null;
-		while (iterator.hasNext() && ++i < counter) {
-			lt = iterator.next();
+		while (iterator.hasNext()) {
+			
+			LabeledTree lt = new LabeledTree(iterator.next().getPruferCode());
+			
+			newClass = true;
+			classIterator = classes.iterator();
+			while(classIterator.hasNext()) {
+				if (lt.isIsomorphicTo(classIterator.next())) {
+					newClass = false;
+					break;
+				}
+			}
+			
+			if (newClass)
+				classes.add(lt);	
 		}
 		
-		System.out.println(lt);
+		System.out.println("\n\n\n\n");
 		
-		System.out.println(lt3.isIsomorphicTo(lt));
+		classIterator = classes.iterator();
+		while (classIterator.hasNext()) {
+			System.out.println(classIterator.next());
+		}
+		
 
 	}
 
