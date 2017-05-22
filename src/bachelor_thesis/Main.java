@@ -23,37 +23,91 @@ public class Main {
 
 	public static void main(String[] args) {
 
-		FlipGraph fg = new FlipGraph(6);
-		LinkedList<LabeledTree> classes = new LinkedList<LabeledTree>();
+		LabeledTree lt1 = new LabeledTree(new PruferCode(new int[] { 6, 2, 2, 5, 1 }));
+		LabeledTree lt2 = new LabeledTree(new PruferCode(new int[] { 6, 5, 3, 1, 1 }));
+		System.out.println(lt1);
+		System.out.println(lt2);
+		System.out.println(lt1.isIsomorphicTo(lt2));
+
+		System.out.println("\n\n\n\n___________________________________________________________________________");
+		System.out.println("___________________________________________________________________________\n\n\n\n");
+
+		FlipGraph fg = new FlipGraph(7);
+		LinkedList<LinkedList<LabeledTree>> classes = new LinkedList<LinkedList<LabeledTree>>();
+		Iterator<LinkedList<LabeledTree>> classIterator;
 		boolean newClass = true;
 
-		Iterator<LabeledTree> classIterator;
-		Iterator<LabeledTree> iterator = fg.vertexSet().iterator();
-		while (iterator.hasNext()) {
-			
-			LabeledTree lt = new LabeledTree(iterator.next().getPruferCode());
-			
+		// --
+		//Iterator<LabeledTree> iter = fg.vertexSet().iterator();
+		//HashSet<LabeledTree> vertexSetCopy = new HashSet<>();
+		//while (iter.hasNext()) {
+		//	vertexSetCopy.add(new LabeledTree(iter.next().getPruferCode()));
+		//}
+		// --
+
+		Iterator<LabeledTree> graphIterator = fg.vertexSet().iterator();
+		while (graphIterator.hasNext()) {
+			LabeledTree lt = new LabeledTree(graphIterator.next().getPruferCode());
 			newClass = true;
+
 			classIterator = classes.iterator();
-			while(classIterator.hasNext()) {
-				if (lt.isIsomorphicTo(classIterator.next())) {
+			while (classIterator.hasNext()) {
+				LinkedList<LabeledTree> current = classIterator.next();
+				if (lt.equals(lt1) && current.get(0).equals(lt2)) {
+					lt.isIsomorphicTo(current.get(0));
+				}
+				if (lt.equals(lt2) && current.get(0).equals(lt1)) {
+					lt.isIsomorphicTo(current.get(0));
+				}
+
+				if (lt.isIsomorphicTo(current.get(0))) {
+					// if (lt.hasZeroLeaf())
+					current.add(lt);
 					newClass = false;
-					break;
+					// break;
 				}
 			}
-			
-			if (newClass)
-				classes.add(lt);	
+			if (newClass) {
+				LinkedList<LabeledTree> aux = new LinkedList<LabeledTree>();
+				// if (lt.hasZeroLeaf()) {
+				aux.add(lt);
+				classes.add(aux);
+				// }
+			}
 		}
-		
-		System.out.println("\n\n\n\n");
-		
-		classIterator = classes.iterator();
-		while (classIterator.hasNext()) {
-			System.out.println(classIterator.next());
-		}
-		
 
+		System.out.println("\n\n\n\n___________________________________________________________________________");
+		System.out.println("___________________________________________________________________________\n\n\n\n");
+
+		int counter = 0;
+		Iterator<LinkedList<LabeledTree>> outerIterator = classes.iterator();
+		while (outerIterator.hasNext()) {
+			LinkedList<LabeledTree> local = outerIterator.next();
+			Iterator<LabeledTree> innerIterator = local.iterator();
+			System.out.println("Class " + (counter++));
+			while (innerIterator.hasNext()) {
+				System.out.println("    " + innerIterator.next());
+			}
+		}
+
+		System.out.println("\n\n\n\n___________________________________________________________________________");
+		System.out.println("___________________________________________________________________________\n\n\n\n");
+
+		lt1 = new LabeledTree(new PruferCode(new int[] { 6, 2, 2, 5, 1 }));
+		lt2 = new LabeledTree(new PruferCode(new int[] { 6, 5, 3, 1, 1 }));
+		System.out.println(lt1);
+		System.out.println(lt2);
+		System.out.println(lt1.isIsomorphicTo(lt2));
+
+	}
+
+	public static boolean allDigitsbelowN(int number, int n) {
+		while (number > 0) {
+			if (number % 10 >= n)
+				return false;
+			number /= 10;
+		}
+		return true;
 	}
 
 	public static int c(int n) {

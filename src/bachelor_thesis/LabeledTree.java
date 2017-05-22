@@ -164,7 +164,8 @@ public class LabeledTree extends SimpleWeightedGraph<Integer, DefaultWeightedEdg
 	 */
 	public LabeledTree() {
 		super(DefaultWeightedEdge.class);
-		System.err.println("markedVertices array not initialized. This might cause a runtime error.");
+		// System.err.println("markedVertices array not initialized. This might
+		// cause a runtime error.");
 		// markedVertices = new boolean[n];
 	}
 
@@ -669,7 +670,7 @@ public class LabeledTree extends SimpleWeightedGraph<Integer, DefaultWeightedEdg
 		int min = 0;
 		int max = n;
 		LabeledTree canonicalPath = new LabeledTree();
-		System.err.println("but this time it is ok");
+		// System.err.println("but this time it is ok");
 		canonicalPath.markedVertices = new boolean[n];
 		canonicalPath.addVertex(0);
 		for (int iter = 1; iter < n; iter++) {
@@ -738,16 +739,9 @@ public class LabeledTree extends SimpleWeightedGraph<Integer, DefaultWeightedEdg
 	}
 
 	public boolean isIsomorphicTo(LabeledTree other) {
-		
-		System.out.println("this == other -> " + (this == other));
 
 		this.resetVertexMarks();
 		other.resetVertexMarks();
-		
-		System.out.println("this == other" + (this == other));
-
-		System.err.println(this);
-		System.err.println(other);
 
 		int[] thisDegSeq = this.getDegreeSequence();
 		int[] otherDegSeq = other.getDegreeSequence();
@@ -767,14 +761,8 @@ public class LabeledTree extends SimpleWeightedGraph<Integer, DefaultWeightedEdg
 			if (this.degreeOf(u) == minDeg)
 				break;
 		}
-		System.out.println(Arrays.toString(this.markedVertices));
-		System.out.println(Arrays.toString(other.markedVertices));
-		System.out.println("\nmarkVertex(u)");
+
 		this.markVertex(u);
-		//other.unmarkVertex(u); // compiler bug?
-		System.out.println(Arrays.toString(this.markedVertices));
-		System.out.println(Arrays.toString(other.markedVertices));
-		System.out.println("\n");
 
 		// find a potential root for 'other'
 		int v = -1;
@@ -786,14 +774,9 @@ public class LabeledTree extends SimpleWeightedGraph<Integer, DefaultWeightedEdg
 			// check if 'v' can be a candidate for root of 'other'
 			if (other.degreeOf(v) == minDeg /* ALSO CHECK THE NEIGHBORS */) {
 				// this vertex seems promising
-				System.out.println(Arrays.toString(this.markedVertices));
-				System.out.println(Arrays.toString(other.markedVertices));
-				System.out.println("other.markVertex(" + v + ")");
 				other.markVertex(v);
 				// test it
-				System.out.println(Arrays.toString(this.markedVertices));
-				System.out.println(Arrays.toString(other.markedVertices));
-				if (this.isIsomorphicToRooted(u, other, v, this.vertexSet().size() - 1)) {
+				if (this.isIsomorphicToRooted(u, other, v, this.vertexSet().size() - 1, u, v)) {
 					return true;
 				} else {
 					// ok, it can not be the root and
@@ -803,76 +786,65 @@ public class LabeledTree extends SimpleWeightedGraph<Integer, DefaultWeightedEdg
 			}
 		}
 		return false;
-
 	}
 
-	private boolean isIsomorphicToRooted(Integer thisRoot, LabeledTree other, Integer otherRoot, int verticesLeft) {
-
-		System.out.println("startIsIsomorphicToRooted " + thisRoot + "    " + otherRoot);
-		System.out.println(Arrays.toString(this.markedVertices));
-		System.out.println(Arrays.toString(other.markedVertices));
+	private boolean isIsomorphicToRooted(Integer thisRoot, LabeledTree other, Integer otherRoot, int verticesLeft,
+			Integer startRoot, Integer otherStartRoot) {
 
 		// if there are less than two vertices then we know that the two trees
 		// are isomorphic
-		if (verticesLeft <= 1)
+		if (verticesLeft < 1)
 			return true;
 
 		// iterate over the vertices in 'this'
-		BreadthFirstIterator<Integer, DefaultWeightedEdge> bfsiterator = new BreadthFirstIterator<>(this, thisRoot);
-		bfsiterator.next();
+		BreadthFirstIterator<Integer, DefaultWeightedEdge> bfsiterator = new BreadthFirstIterator<>(this, startRoot);
+		// bfsiterator.next();
 		while (bfsiterator.hasNext()) {
 
 			// pick one unmarked vertex from 'this'
+
 			int nextVertex = bfsiterator.next();
+			
 			if (this.isVertexMarked(nextVertex))
 				continue;
 
-			System.out.println("next vertex = " + nextVertex);
-
 			// mark the vertex for which you want to find the corresponding
-			// vertex in 'other'
+			// vertex in 'other'thisRoot
 			this.markVertex(nextVertex);
 
 			// test the candidates
-			Iterator<Integer> candidates = other.vertexSet().iterator();
-			System.out.println(Arrays.toString(this.markedVertices));
-			System.out.println(Arrays.toString(other.markedVertices));
+			BreadthFirstIterator<Integer, DefaultWeightedEdge> candidates = new BreadthFirstIterator<>(other,
+					otherStartRoot); // other.vertexSet().iterator();
 			while (candidates.hasNext()) {
 				int candidate = candidates.next();
 				// check if the 'candidate' has already been taken or not
 				if (other.isVertexMarked(candidate)) {
 					continue;
 				}
+				if (!other.hasMarkedNeighbor(candidate))
+					continue;
 
 				// plug it in and see what happens
-				System.out.println(nextVertex + "    " + candidate);
 				if (this.degreeOf(nextVertex) == other
 						.degreeOf(candidate) /* also check for the neighbors */) {
 					other.markVertex(candidate);
-					System.out.println(Arrays.toString(this.markedVertices));
-					System.out.println(Arrays.toString(other.markedVertices));
-					if (this.isIsomorphicToRooted(nextVertex, other, candidate, verticesLeft - 1)) {
-						System.out.println("\n\n");
-						System.out.println("TRUE");
-						return true;
+					if (this.isIsomorphicToRooted(nextVertex, other, candidate, verticesLeft - 1, startRoot,
+							otherStartRoot)) {
+						if (this.equals(new LabeledTree(new PruferCode(new int[] { 6, 5, 3, 1, 1 }))))
+							return true;
 					} else {
-						System.out.println("no");
 						other.unmarkVertex(candidate);
 					}
 
 				} else {
 					// the candidate was not good, we unmark it
-					System.out.println("nope");
-					System.out.println("because this.degreeOf(nextVertex) = " + this.degreeOf(nextVertex)
-							+ " and other.degreeOf(candidate) = " + other.degreeOf(candidate));
 					other.unmarkVertex(candidate);
 				}
 			}
 		}
-		System.out.println("\n\n");
-		System.out.println("FALSE");
 		return false;
 	}
+
 
 	private Set<Integer> getNeighborsOf(Integer vertex) {
 		HashSet<Integer> neighbors = new HashSet<Integer>();
@@ -900,9 +872,11 @@ public class LabeledTree extends SimpleWeightedGraph<Integer, DefaultWeightedEdg
 			return 0;
 
 		int min = n;
-		for (int i = 1; i < n; ++i) {
-			if (degSeq[i] < min && degSeq[i] > 0)
-				min = degSeq[i];
+		for (int i = 0; i < n; ++i) {
+			if (degSeq[i] > 0) {
+				min = i;
+				break;
+			}
 		}
 		return min;
 	}
@@ -916,11 +890,19 @@ public class LabeledTree extends SimpleWeightedGraph<Integer, DefaultWeightedEdg
 		return result;
 	}
 
+	public boolean hasZeroLeaf() {
+		Iterator<Integer> iterator = this.vertexSet().iterator();
+		while (iterator.hasNext()) {
+			if (this.degreeOf(iterator.next()) == 0)
+				return false;
+		}
+		return true;
+	}
+
 	public void resetVertexMarks() {
 		for (int i = 0; i < this.markedVertices.length; ++i) {
 			markedVertices[i] = false;
 		}
-		System.out.println("     -> " + Arrays.toString(this.markedVertices));
 	}
 
 	public boolean isVertexMarked(Integer v) {
@@ -928,12 +910,21 @@ public class LabeledTree extends SimpleWeightedGraph<Integer, DefaultWeightedEdg
 	}
 
 	public void markVertex(Integer v) {
-		System.out.println(this.markedVertices);
 		this.markedVertices[v] = true;
 	}
 
 	public void unmarkVertex(Integer v) {
 		markedVertices[v] = false;
+	}
+
+	public boolean hasMarkedNeighbor(Integer v) {
+		Iterator<DefaultWeightedEdge> iterator = this.edgesOf(v).iterator();
+		while (iterator.hasNext()) {
+			DefaultWeightedEdge e = iterator.next();
+			if (this.isVertexMarked(this.getEdgeSource(e)) || this.isVertexMarked(this.getEdgeTarget(e)))
+				return true;
+		}
+		return false;
 	}
 
 	@Override
